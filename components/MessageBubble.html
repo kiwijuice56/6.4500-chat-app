@@ -1,0 +1,17 @@
+<div class="bubble-wrapper" :class="isOwn ? 'bubble-own' : 'bubble-other'">
+    <div class="bubble" :class="{ 'bubble-deleted': message.value.tombstone }">
+        <p class="bubble-content">
+            <template v-if="message.value.tombstone">🪦 This message was deleted.</template>
+            <template v-else>{{ message.value.content }}</template>
+        </p>
+        <div class="bubble-meta">
+            <span class="bubble-time">{{ formattedTime }}</span>
+            <button
+                v-if="isOwn && !message.value.tombstone"
+                class="bubble-delete"
+                @click="deleteMessage"
+                :disabled="isDeleting"
+            >{{ isDeleting ? '…' : '✕' }}</button>
+        </div>
+    </div>
+</div>

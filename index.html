@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>KiwiChat</title>
+        <script type="importmap">
+            {
+                "imports": {
+                    "vue": "https://cdn.jsdelivr.net/npm/vue@3.5.32/dist/vue.esm-browser.js",
+                    "vue-router": "https://cdn.jsdelivr.net/npm/vue-router@4/dist/vue-router.esm-browser.js",
+                    "@vue/devtools-api": "https://cdn.jsdelivr.net/npm/@vue/devtools-api@6/lib/esm/index.js",
+                    "@graffiti-garden/implementation-decentralized": "https://cdn.jsdelivr.net/npm/@graffiti-garden/implementation-decentralized@0.0.9/dist/browser/index.js",
+                    "@graffiti-garden/wrapper-vue": "https://cdn.jsdelivr.net/npm/@graffiti-garden/wrapper-vue@1.2.2/dist/browser/plugin.mjs"
+                }
+            }
+        </script>
+        <script src="./main.js" type="module"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400..800&family=Open+Sans:wght@300..800&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body>
+        <div id="app">Loading...</div>
+        <template id="template">
+            <button v-if="!$graffitiSession.value" @click="$graffiti.login()">Log In</button>
+            <template v-else>
+                <div class="app-layout">
+                <header class="session-bar">
+                    <button @click="$graffiti.logout($graffitiSession.value)">Log Out</button>
+                </header>
+                <main>
+                    <nav>
+                        <ul>
+                            <li>
+                                <section class="logo">
+                                    <img src="images/kiwi.png" />
+                                    KiwiChat
+                                </section>
+                            </li>
+                            <li>
+                                <router-link to="/explore" custom v-slot="{ navigate, isActive }">
+                                    <button
+                                        type="button"
+                                        class="nav-btn"
+                                        @click="navigate"
+                                        :disabled="isActive"
+                                        :class="{ 'nav-active': isActive }"
+                                    >
+                                        <img src="images/explore.png" /> Explore
+                                    </button>
+                                </router-link>
+                            </li>
+                            <li>
+                                <router-link to="/chats" custom v-slot="{ navigate }">
+                                    <button
+                                        type="button"
+                                        class="nav-btn"
+                                        @click="navigate"
+                                        :disabled="$route.path === '/chats'"
+                                        :class="{ 'nav-active': $route.path === '/chats' || $route.path.startsWith('/chat/') }"
+                                    >
+                                        <img src="images/chat.png" /> My Chats
+                                    </button>
+                                </router-link>
+                            </li>
+                        </ul>
+                    </nav>
+                    <section class="appContent">
+                        <router-view />
+                    </section>
+                </main>
+                </div>
+            </template>
+        </template>
+    </body>
+</html>

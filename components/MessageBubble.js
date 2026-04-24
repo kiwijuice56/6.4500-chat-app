@@ -1,0 +1,53 @@
+import { ref, computed }                    from "vue";
+import { useGraffiti, useGraffitiSession }  from "@graffiti-garden/wrapper-vue";
+
+export default async () => ({
+    template: await fetch(new URL("./MessageBubble.html", import.meta.url)).then((r) => r.text()),
+
+    props: {
+        message:     { type: Object,  required: true }, // full Graffiti object
+        threadChannel: { type: String, required: true }, // needed to post tombstone
+        allowed:     { type: Array,   required: true }, // member list for tombstone
+    },
+
+    setup(props) {
+        const graffiti   = useGraffiti();
+        const session    = useGraffitiSession();
+        const isDeleting = ref(false);
+
+        const isOwn = computed(() =>
+            session.value?.actor === props.message.actor,
+        );
+
+        const formattedTime = computed(() => {
+            const date = new Date(props.message.value.published);
+            return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+        });
+
+        async function deleteMessage() {
+            isDeleting.value = true;
+            try {
+                // 1. Post a tombstone into the same channel so all members see it.
+                //    It uses the original published timestamp so it sorts into the
+                //    same position in the timeline as the deleted message.
+                await graffiti.post(
+                    {
+                        value: {
+                            tombstone: true,
+                            published: props.message.value.published,
+                            targetUrl: props.message.url,
+                        },
+                        channels: [props.threadChannel],
+                        allowed: props.allowed,
+                    },
+                    session.value,
+                );
+                await graffiti.delete({ url: props.message.url }, session.value);
+            } finally {
+                isDeleting.value = false;
+            }
+        }
+
+        return { isOwn, formattedTime, isDeleting, deleteMessage };
+    },
+});

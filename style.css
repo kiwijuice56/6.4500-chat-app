@@ -1,0 +1,326 @@
+html {
+    height: 100%;
+}
+
+body {
+    font-family: "Open Sans", sans-serif;
+    color: #5E7787;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+#app {
+    height: 100vh;
+    height: 100dvh;
+    max-height: 100vh;
+    max-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.app-layout {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+}
+
+.session-bar {
+    flex: 0 0 auto;
+    padding: 0.5rem 0.75rem 0.5rem calc(200px + 1.25rem);
+    text-align: right;
+}
+
+main {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    margin-left: calc(200px + 1em);
+}
+
+nav {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 200px;
+    z-index: 50;
+    box-sizing: border-box;
+    background: linear-gradient(to bottom, #DF8CAA, #916893);
+    padding-bottom: 1em;
+}
+
+nav li > * {
+    height: 3em;
+    display: flex;
+    align-items: center;
+
+    font-size: 1em;
+    text-align: left;
+
+    background: linear-gradient(to right, #95133832, #FFFFFF00);
+    color: rgba(255, 255, 255, 0.8);
+    border: none;
+    padding-left: 0.6em;
+}
+
+nav button.nav-btn {
+    position: relative;
+    width: 100%;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+nav button.nav-active::after {
+    content: "";
+    position: absolute;
+    right: 0.35em;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0.4em 0 0.4em 0.55em;
+    border-color: transparent transparent transparent rgba(255, 255, 255, 0.95);
+}
+
+.logo {
+    font-family: "Baloo 2", sans-serif;
+    font-weight: 800;
+    font-size: 1.5em;
+    color: #FFF;
+    background: none;
+}
+
+nav button:hover:not(:disabled):not(.nav-active) {
+    text-decoration: underline;
+}
+
+/* Active route: pink wash; same for disabled (current page) or .nav-active on thread. */
+nav button:disabled,
+nav button.nav-active {
+    font-weight: 700;
+    color: #fff;
+    opacity: 1;
+    -webkit-tap-highlight-color: transparent;
+    background: linear-gradient(to right, rgba(255, 150, 188, 0.55), rgba(255, 205, 220, 0.88));
+}
+
+/* Brighter on hover (explicit bg so UA disabled/hover graying does not win). */
+nav button.nav-active:hover {
+    text-decoration: underline;
+    background: linear-gradient(to right, rgba(255, 175, 205, 0.75), rgba(255, 228, 238, 0.98));
+    filter: brightness(1.06);
+}
+
+nav button:not(:disabled):not(.nav-active) > img {
+    opacity: 0.8;
+}
+
+nav img {
+    height: 1.35em;
+    margin-right: 0.5em;
+}
+
+.appContent {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    padding: 0 1rem 1rem 0;
+    overflow: auto;
+}
+
+.thread-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.thread-card {
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    gap: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 1rem 1.1rem;
+    border: 1px solid #c5d0d8;
+    border-radius: 0.45em;
+    background: #fafcfd;
+    box-shadow: 0 1px 2px rgba(37, 34, 48, 0.06);
+}
+
+.thread-card-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.thread-card-title {
+    margin: 0;
+    font-size: 1.12em;
+    font-weight: 600;
+    color: #4a6674;
+    line-height: 1.3;
+}
+
+.thread-card-line {
+    margin: 0;
+    padding: 0;
+    font-size: 0.9em;
+    line-height: 1.35;
+    color: #5e7787;
+}
+
+.thread-card-actions {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.45rem;
+}
+
+.thread-card-btn {
+    min-width: 5.75rem;
+    padding: 0.45em 0.9em;
+    border-radius: 0.35em;
+    border: 1px solid #b8c4cc;
+    background: #ffffff;
+    color: #5e7787;
+    font-size: 0.9em;
+    cursor: pointer;
+}
+
+.thread-card-btn:hover:not(:disabled):not(.thread-card-btn-primary) {
+    background: #eef3f6;
+}
+
+.thread-card-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.thread-card-btn-primary {
+    border: none;
+    background-color: #d989a9;
+    color: #fff;
+    font-weight: 600;
+}
+
+.thread-card-btn-primary:hover:not(:disabled) {
+    background-color: #ebb4ca;
+}
+
+.chat-page {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    gap: 0.5rem;
+}
+
+.chat-header {
+    flex: 0 0 auto;
+}
+
+.chat-header h2 {
+    margin: 0.25rem 0;
+}
+
+.chat-meta {
+    margin: 0.25rem 0 0;
+    font-size: 0.9em;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+
+.bubble-content {
+    margin: 0;
+}
+
+.bubble-wrapper {
+    background-color: #95A2B1;
+    color: white;
+    padding: 1em;
+    padding-bottom: 0.75em;
+    border-radius: 0.6em;
+    margin-right: 25%;
+    margin-top: 1em;
+    text-wrap: pretty;
+    word-break: break-all;
+    hyphens: auto;
+    filter: drop-shadow(2px 2px 2px rgba(37, 34, 48, 0.29));
+}
+
+.bubble-own {
+    background-color: #8a8cbc;
+    margin-right: 0%;
+    margin-left: 25%;
+}
+
+.bubble-meta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0.5em;
+}
+
+.bubble-time {
+    font-size: 0.8em;
+    flex: 1;
+}
+
+.messages-list {
+    padding: 0.5rem 5% 0.75rem 0;
+    margin: 0;
+    list-style: none;
+}
+
+.scroll-box {
+    flex: 1 1 0;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid #ccc;
+    border-radius: 0.35em;
+}
+
+.scroll-end-anchor {
+    height: 1px;
+    margin: 0;
+    pointer-events: none;
+}
+
+.message-container {
+    flex: 0 0 auto;
+    width: 100%;
+}
+
+.message-container form {
+    display: flex;
+}
+
+.message-container form :first-child {
+    flex: 8;
+    height: 2em;
+    border-radius: 0.35em;
+}
+
+.message-container form :last-child {
+    flex: 1;
+}

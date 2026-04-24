@@ -1,0 +1,42 @@
+<div v-if="activeThread" class="chat-page">
+    <header class="chat-header">
+        <router-link to="/chats">← Back to My Chats</router-link>
+        <h2>{{ activeThread.value.title }}</h2>
+        <button type="button" @click="leaveThread()">Leave thread</button>
+        <p class="chat-meta">
+            Tags: {{ activeThread.value.tags.join(", ") || "none" }} |
+            Members: {{ memberActors.length }} / {{ activeThread.value.sizeLimit }}
+        </p>
+    </header>
+
+    <section ref="scrollBoxEl" class="scroll-box">
+        <p v-if="messagesLoading">Loading messages…</p>
+        <ul v-else class="messages-list">
+            <message-bubble
+                v-for="obj of sortedMessages"
+                :key="obj.url"
+                :message="obj"
+                :thread-channel="activeThread.value.channel"
+                :allowed="memberActors"
+            />
+        </ul>
+        <div ref="scrollEndEl" class="scroll-end-anchor" aria-hidden="true"></div>
+    </section>
+
+    <section class="message-container">
+        <form @submit.prevent="sendMessage()">
+            <input
+                v-model="myMessage"
+                type="text"
+                placeholder="Message…"
+                :disabled="isSending"
+            />
+            <input
+                type="submit"
+                :value="isSending ? 'Sending…' : 'Send'"
+                :disabled="!myMessage.length || isSending"
+            />
+        </form>
+    </section>
+</div>
+<p v-else>Thread not found.</p>
