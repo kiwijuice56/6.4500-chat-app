@@ -1,4 +1,4 @@
-import { ref, computed, watchEffect }        from "vue";
+import { ref, computed, watchEffect } from "vue";
 import {
     useGraffitiSession,
     useGraffitiDiscover,
@@ -8,6 +8,22 @@ import { visibleChatMessagesFromRaw } from "./visibleChatMessages.js";
 
 /** Non-empty channel list when there are no threads yet. */
 const DISCOVER_THREAD_LINES_IDLE = "__store_thread_lines_idle__";
+
+/** Tombstone rows on the class channel that hide a thread Create by `targetUrl`. */
+const threadDeleteStatusSchema = {
+    properties: {
+        value: {
+            required: ["tombstone", "targetUrl", "published"],
+            properties: {
+                tombstone: { type: "boolean" },
+                targetUrl: { type: "string" },
+                deleted: { type: "boolean" },
+                statusAt: { type: "number" },
+                published: { type: "number" },
+            },
+        },
+    },
+};
 
 const threadLineSchema = {
     properties: {
@@ -124,6 +140,13 @@ export function useSharedStore() {
         },
     );
 
+    const { objects: threadDeleteStatusObjects } = useGraffitiDiscover(
+        () => [CLASS_CHANNEL],
+        threadDeleteStatusSchema,
+        session,
+        true,
+    );
+
     const { objects: membershipObjects } = useGraffitiDiscover(
         () => threadObjects.value.map((t) => t.value.channel),
         {
@@ -154,8 +177,27 @@ export function useSharedStore() {
         true,
     );
 
-    // Keep the module-level refs in sync
-    watchEffect(() => { threads.value             = threadObjects.value; });
+    // Keep the module-level refs in sync (threads omit soft-deleted thread Creates)
+    watchEffect(() => {
+        const raw = threadDeleteStatusObjects.value;
+        const latestByTarget = new Map();
+        for (const o of raw) {
+            const v = o.value;
+            if (!v?.tombstone || !v.targetUrl) continue;
+            const target = v.targetUrl;
+            const prev = latestByTarget.get(target);
+            const curStamp = v.statusAt ?? v.published ?? 0;
+            const prevStamp = prev ? (prev.value.statusAt ?? prev.value.published ?? 0) : -1;
+            if (!prev || curStamp > prevStamp || (curStamp === prevStamp && o.url > prev.url)) {
+                latestByTarget.set(target, o);
+            }
+        }
+        const removedUrls = new Set();
+        for (const evt of latestByTarget.values()) {
+            if (evt.value.deleted !== false) removedUrls.add(evt.value.targetUrl);
+        }
+        threads.value = threadObjects.value.filter((t) => !removedUrls.has(t.url));
+    });
     watchEffect(() => { allMembershipEvents.value = membershipObjects.value; });
     watchEffect(() => { threadsLoading.value      = threadsIsFirstPoll.value; });
     watchEffect(() => { threadLineObjects.value   = threadLineDiscoverObjects.value; });

@@ -1,7 +1,7 @@
 import { ref, computed, watch, nextTick } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useGraffiti, useGraffitiSession, useGraffitiDiscover } from "@graffiti-garden/wrapper-vue";
-import { threads, membersOfThread } from "../store.js";
+import { CLASS_CHANNEL, threads, membersOfThread } from "../store.js";
 
 /** Non-empty placeholder so discover never receives `[]` channels. */
 const DISCOVER_IDLE_CHANNEL = "__chat_discover_idle__";
@@ -39,6 +39,15 @@ export default async () => {
             const threadUrl = computed(() => decodeURIComponent(route.params.threadUrl));
             const activeThread = computed(() => threads.value.find((t) => t.url === threadUrl.value) ?? null);
             const memberActors = computed(() => (activeThread.value ? membersOfThread(activeThread.value) : []));
+
+            const isThreadOwner = computed(
+                () =>
+                    !!activeThread.value &&
+                    !!session.value?.actor &&
+                    activeThread.value.actor === session.value.actor,
+            );
+
+            const isDeletingThread = ref(false);
 
             const chatMetaTitle = computed(() => {
                 const t = activeThread.value?.value;
@@ -282,6 +291,39 @@ export default async () => {
                 router.push("/chats");
             }
 
+            async function deleteThread() {
+                if (!activeThread.value || !isThreadOwner.value || isDeletingThread.value) return;
+                if (
+                    !confirm(
+                        "Delete this chat for everyone? The chat will disappear from Explore and My Chats. This cannot be undone.",
+                    )
+                ) {
+                    return;
+                }
+                isDeletingThread.value = true;
+                try {
+                    const t = activeThread.value;
+                    await graffiti.post(
+                        {
+                            value: {
+                                tombstone: true,
+                                published: t.value.published ?? Date.now(),
+                                targetUrl: t.url,
+                                deleted: true,
+                                statusAt: Date.now(),
+                            },
+                            channels: [CLASS_CHANNEL],
+                        },
+                        session.value,
+                    );
+                    router.push("/chats");
+                } catch (err) {
+                    console.error(err);
+                } finally {
+                    isDeletingThread.value = false;
+                }
+            }
+
             return {
                 session,
                 activeThread,
@@ -294,6 +336,9 @@ export default async () => {
                 isPendingMessage,
                 sendMessage,
                 leaveThread,
+                deleteThread,
+                isThreadOwner,
+                isDeletingThread,
                 messageInputEl,
                 scrollBoxEl,
                 scrollEndEl,

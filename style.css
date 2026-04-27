@@ -779,8 +779,16 @@ nav img {
     text-overflow: ellipsis;
 }
 
-.chat-leave-btn {
+.chat-header-actions {
     margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-shrink: 0;
+}
+
+.chat-leave-btn,
+.chat-delete-thread-btn {
     flex: 0 0 auto;
 }
 

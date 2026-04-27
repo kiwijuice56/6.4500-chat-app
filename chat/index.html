@@ -7,7 +7,16 @@
                 </button>
             </router-link>
             <h2 class="chat-title" :title="activeThread.value.title">{{ activeThread.value.title }}</h2>
-            <button type="button" class="thread-card-btn chat-leave-btn" @click="leaveThread()">Leave chat</button>
+            <div class="chat-header-actions">
+                <button
+                    v-if="isThreadOwner"
+                    type="button"
+                    class="thread-card-btn chat-delete-thread-btn"
+                    @click="deleteThread()"
+                    :disabled="isDeletingThread"
+                >{{ isDeletingThread ? "Deleting…" : "Delete chat" }}</button>
+                <button type="button" class="thread-card-btn chat-leave-btn" @click="leaveThread()">Leave chat</button>
+            </div>
         </div>
         <p class="thread-card-line thread-card-meta-row chat-header-meta" :title="chatMetaTitle">
             {{ memberActors.length }} / {{ activeThread.value.sizeLimit }} joined · {{ activeThread.value.tags.length ? activeThread.value.tags.join(", ") : "No tags" }}
