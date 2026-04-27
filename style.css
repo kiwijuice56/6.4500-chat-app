@@ -60,7 +60,7 @@ main {
     display: flex;
     flex: 1;
     min-height: 0;
-    margin-left: calc(200px + 1em);
+    margin-left: 200px;
 }
 
 nav {
@@ -197,7 +197,7 @@ nav img {
     flex-direction: column;
     flex: 1;
     min-height: 0;
-    padding: 0.5rem 1rem 1rem 0;
+    padding: 0.5rem 1rem 1rem 1em;
     overflow: auto;
     scrollbar-gutter: stable;
 }
@@ -312,14 +312,20 @@ nav img {
 
 .thread-filter-bar {
     position: sticky;
-    top: 0;
+    top: -0.5rem;
+    position: -webkit-sticky;
     z-index: 6;
     display: flex;
     align-items: flex-end;
     gap: 0.6rem;
+    margin-top: -0.5rem;
     margin-bottom: 0.75rem;
-    padding: 0.15rem 0 0.45rem;
+    margin-left: -1em;
+    margin-right: -1rem;
+    padding: 0.65rem 0 0.65rem 1em;
+    padding-right: 1rem;
     background: #fff;
+    box-shadow: 0 1px 3px rgba(37, 34, 48, 0.12);
 }
 
 .thread-filter-field {
