@@ -2,7 +2,7 @@
     <header class="chat-header">
         <div class="chat-header-row">
             <router-link to="/chats" custom v-slot="{ navigate }">
-                <button type="button" class="chat-back-btn" @click="navigate" aria-label="Back to threads" title="Back to threads">
+                <button type="button" class="chat-back-btn" @click="navigate" aria-label="Back to chats" title="Back to chats">
                     <span class="chat-back-icon" aria-hidden="true"></span>
                 </button>
             </router-link>
@@ -63,4 +63,4 @@
         </form>
     </section>
 </div>
-<p v-else>Thread not found.</p>
+<div v-else class="messages-status chats-status">Chat not found.</div>

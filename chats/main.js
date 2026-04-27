@@ -1,7 +1,7 @@
 import { ref, computed }                from "vue";
 import { useRouter }                    from "vue-router";
 import { useGraffiti, useGraffitiSession } from "@graffiti-garden/wrapper-vue";
-import { threads, membersOfThread, lastPreviewByChannel } from "../store.js";
+import { threads, threadsLoading, membersOfThread, lastPreviewByChannel } from "../store.js";
 
 export default async () => ({
     template: await fetch(new URL("./index.html", import.meta.url)).then((r) => r.text()),
@@ -87,6 +87,7 @@ export default async () => ({
             filterTagsInput,
             filterSizeLimit,
             hasFiltersApplied,
+            threadsLoading,
             membersOfThread,
             leaveThread,
             openChat,

@@ -140,14 +140,14 @@ export function useSharedStore() {
         },
     );
 
-    const { objects: threadDeleteStatusObjects } = useGraffitiDiscover(
+    const { objects: threadDeleteStatusObjects, isFirstPoll: threadDeletesIsFirstPoll } = useGraffitiDiscover(
         () => [CLASS_CHANNEL],
         threadDeleteStatusSchema,
         session,
         true,
     );
 
-    const { objects: membershipObjects } = useGraffitiDiscover(
+    const { objects: membershipObjects, isFirstPoll: membershipIsFirstPoll } = useGraffitiDiscover(
         () => threadObjects.value.map((t) => t.value.channel),
         {
             properties: {
@@ -163,6 +163,7 @@ export function useSharedStore() {
             },
         },
         session,
+        true,
     );
 
     const threadLineChannelGetter = () => {
@@ -199,7 +200,15 @@ export function useSharedStore() {
         threads.value = threadObjects.value.filter((t) => !removedUrls.has(t.url));
     });
     watchEffect(() => { allMembershipEvents.value = membershipObjects.value; });
-    watchEffect(() => { threadsLoading.value      = threadsIsFirstPoll.value; });
+    /** Hide thread lists until creates, delete-tombstones, and (if any) membership first polls have settled. */
+    watchEffect(() => {
+        const needMembership = threadObjects.value.length > 0;
+        const membershipReady = !needMembership || !membershipIsFirstPoll.value;
+        threadsLoading.value =
+            threadsIsFirstPoll.value ||
+            threadDeletesIsFirstPoll.value ||
+            !membershipReady;
+    });
     watchEffect(() => { threadLineObjects.value   = threadLineDiscoverObjects.value; });
 
     return { session, sessionActorId, sessionActorDisplay };

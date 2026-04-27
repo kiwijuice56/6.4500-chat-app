@@ -16,11 +16,13 @@
         </div>
     </template>
 </ThreadListToolbar>
-<p v-if="myThreads.length === 0">You haven't joined any threads yet.</p>
-<div v-if="myThreads.length > 0 && filteredMyThreads.length === 0" class="messages-status chats-status">
+<div v-if="threadsLoading" class="messages-status chats-status">Loading...</div>
+<template v-else>
+<div v-if="myThreads.length === 0" class="messages-status chats-status">You haven't joined any chats yet.</div>
+<div v-else-if="filteredMyThreads.length === 0" class="messages-status chats-status">
     {{ hasFiltersApplied ? "No chats with those filters found. Try broadening your search." : "No chats match that name. Try another title." }}
 </div>
-<div v-if="myThreads.length > 0 && filteredMyThreads.length > 0" class="thread-cards">
+<div v-else class="thread-cards">
     <article v-for="obj of filteredMyThreads" :key="obj.url" class="thread-card">
         <div class="thread-card-main">
             <h3 class="thread-card-title">{{ obj.value.title }}</h3>
@@ -35,3 +37,4 @@
         </div>
     </article>
 </div>
+</template>
