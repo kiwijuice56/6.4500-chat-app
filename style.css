@@ -1,3 +1,15 @@
+@property --nav-wash {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 0;
+}
+
+@property --nav-active-t {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 0;
+}
+
 html {
     height: 100%;
 }
@@ -32,6 +44,12 @@ body {
     flex: 0 0 auto;
     padding: 0.5rem 0.75rem 0.5rem calc(200px + 1.25rem);
     text-align: right;
+}
+
+.session-auth-btn {
+    min-width: 5.75rem;
+    font-size: 0.9em;
+    cursor: pointer;
 }
 
 main {
@@ -74,6 +92,26 @@ nav button.nav-btn {
     -webkit-appearance: none;
 }
 
+/* Inactive: opacity + hover wash (gradients do not interpolate — drive wash via @property). */
+nav button.nav-btn:not(:disabled):not(.nav-active) {
+    --nav-wash: 0;
+    opacity: 0.82;
+    transition: opacity 0.18s ease, --nav-wash 0.18s ease;
+    background:
+        linear-gradient(to right, rgba(149, 19, 56, 0.196), rgba(255, 255, 255, 0)),
+        linear-gradient(
+            to right,
+            rgba(255, 255, 255, calc(0.22 * var(--nav-wash))),
+            rgba(255, 255, 255, calc(0.08 * var(--nav-wash)))
+        );
+}
+
+nav button.nav-btn:not(:disabled):not(.nav-active):hover {
+    --nav-wash: 1;
+    opacity: 1;
+    text-decoration: underline;
+}
+
 nav button.nav-active::after {
     content: "";
     position: absolute;
@@ -95,10 +133,6 @@ nav button.nav-active::after {
     background: none;
 }
 
-nav button:hover:not(:disabled):not(.nav-active) {
-    text-decoration: underline;
-}
-
 /* Active route: pink wash; same for disabled (current page) or .nav-active on thread. */
 nav button:disabled,
 nav button.nav-active {
@@ -106,18 +140,21 @@ nav button.nav-active {
     color: #fff;
     opacity: 1;
     -webkit-tap-highlight-color: transparent;
-    background: linear-gradient(to right, rgba(255, 150, 188, 0.55), rgba(255, 205, 220, 0.88));
+    --nav-active-t: 0;
+    filter: brightness(1);
+    transition: --nav-active-t 0.18s ease, filter 0.18s ease;
+    background: linear-gradient(
+        to right,
+        rgba(255, calc(150 + 25 * var(--nav-active-t)), calc(188 + 17 * var(--nav-active-t)), calc(0.55 + 0.2 * var(--nav-active-t))),
+        rgba(255, calc(205 + 23 * var(--nav-active-t)), calc(220 + 18 * var(--nav-active-t)), calc(0.88 + 0.1 * var(--nav-active-t)))
+    );
 }
 
-/* Brighter on hover (explicit bg so UA disabled/hover graying does not win). */
-nav button.nav-active:hover {
+/* Brighter on hover (same gradient family, animated via --nav-active-t). */
+nav button.nav-btn:is(.nav-active, :disabled):hover {
     text-decoration: underline;
-    background: linear-gradient(to right, rgba(255, 175, 205, 0.75), rgba(255, 228, 238, 0.98));
+    --nav-active-t: 1;
     filter: brightness(1.06);
-}
-
-nav button:not(:disabled):not(.nav-active) > img {
-    opacity: 0.8;
 }
 
 nav img {
@@ -253,8 +290,19 @@ nav ul {
     margin: 0;
 }
 
+.bubble-content-tombstone,
+.bubble-deleted .bubble-content {
+    font-style: italic;
+}
+
+.bubble-tombstone-text {
+    font-style: italic;
+    font-synthesis: style;
+}
+
 .bubble-wrapper {
-    background-color: #95A2B1;
+    --bubble-bg: #95a2b1;
+    background-color: var(--bubble-bg);
     color: white;
     padding: 1em;
     padding-bottom: 0.75em;
@@ -264,13 +312,21 @@ nav ul {
     text-wrap: pretty;
     word-break: break-all;
     hyphens: auto;
-    filter: drop-shadow(2px 2px 2px rgba(37, 34, 48, 0.29));
+    /* box-shadow instead of filter: drop-shadow so nested .bubble-delete img filters work */
+    box-shadow: 2px 2px 2px rgba(37, 34, 48, 0.29);
 }
 
 .bubble-own {
-    background-color: #8a8cbc;
+    --bubble-bg: #8a8cbc;
+    background-color: var(--bubble-bg);
     margin-right: 0%;
     margin-left: 25%;
+}
+
+/* Softer fill for tombstones (alpha on white scroll area ≈ lower-opacity background). */
+.bubble-wrapper-deleted {
+    background-color: color-mix(in srgb, var(--bubble-bg) 58%, white);
+    box-shadow: 2px 2px 2px rgba(37, 34, 48, 0.16);
 }
 
 .bubble-meta {
@@ -283,6 +339,62 @@ nav ul {
 .bubble-time {
     font-size: 0.8em;
     flex: 1;
+}
+
+.bubble-delete,
+.bubble-delete-placeholder {
+    flex: 0 0 auto;
+    align-self: stretch;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    min-height: 1.75rem;
+    min-width: 1.75rem;
+    padding: 0.2em;
+    box-sizing: border-box;
+}
+
+.bubble-delete {
+    border: none;
+    border-radius: 0.2em;
+    background: transparent;
+    cursor: pointer;
+    overflow: visible;
+}
+
+.bubble-delete-placeholder {
+    flex-shrink: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.bubble-delete:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.75);
+    outline-offset: 2px;
+}
+
+.bubble-delete img {
+    display: block;
+    width: 1.28rem;
+    height: 1.28rem;
+    object-fit: contain;
+    opacity: 0.55;
+    transition: opacity 0.15s ease;
+}
+
+.bubble-delete:hover:not(:disabled) img {
+    opacity: 1;
+}
+
+.bubble-delete:disabled,
+.bubble-delete.bubble-delete-busy {
+    cursor: wait;
+}
+
+.bubble-delete:disabled img,
+.bubble-delete.bubble-delete-busy img {
+    opacity: 0.35;
 }
 
 .messages-list {

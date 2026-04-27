@@ -1,6 +1,8 @@
 import { ref, computed }                    from "vue";
 import { useGraffiti, useGraffitiSession }  from "@graffiti-garden/wrapper-vue";
 
+const deleteIconUrl = new URL("../images/delete.png", import.meta.url).href;
+
 export default async () => ({
     template: await fetch(new URL("./MessageBubble.html", import.meta.url)).then((r) => r.text()),
 
@@ -48,6 +50,6 @@ export default async () => ({
             }
         }
 
-        return { isOwn, formattedTime, isDeleting, deleteMessage };
+        return { isOwn, formattedTime, isDeleting, deleteMessage, deleteIconUrl };
     },
 });
