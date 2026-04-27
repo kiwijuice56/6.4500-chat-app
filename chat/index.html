@@ -1,8 +1,14 @@
 <div v-if="activeThread" class="chat-page">
     <header class="chat-header">
-        <router-link to="/chats">← Back to My Chats</router-link>
-        <h2>{{ activeThread.value.title }}</h2>
-        <button type="button" @click="leaveThread()">Leave thread</button>
+        <div class="chat-header-row">
+            <router-link to="/chats" custom v-slot="{ navigate }">
+                <button type="button" class="chat-back-btn" @click="navigate" aria-label="Back to threads" title="Back to threads">
+                    <span class="chat-back-icon" aria-hidden="true"></span>
+                </button>
+            </router-link>
+            <h2 class="chat-title" :title="activeThread.value.title">{{ activeThread.value.title }}</h2>
+            <button type="button" class="thread-card-btn chat-leave-btn" @click="leaveThread()">Leave thread</button>
+        </div>
         <p class="chat-meta">
             Tags: {{ activeThread.value.tags.join(", ") || "none" }} |
             Members: {{ memberActors.length }} / {{ activeThread.value.sizeLimit }}
