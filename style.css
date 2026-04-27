@@ -111,6 +111,7 @@ body {
     --theme-nav-strip: rgba(149, 19, 56, 0.196);
     --theme-accent: #d989a9;
     --theme-accent-hover: #ebb4ca;
+    --surface-scroll-soft: #f3f7fa;
     transition:
         --theme-nav-top 0.1s ease,
         --theme-nav-bot 0.1s ease,
@@ -126,6 +127,7 @@ body {
     --theme-nav-strip: rgba(88, 32, 118, 0.26);
     --theme-accent: #b07fd0;
     --theme-accent-hover: #d2b4ea;
+    --surface-scroll-soft: #f3f7fa;
 }
 
 .session-actor-label {
@@ -553,6 +555,7 @@ nav img {
     display: flex;
     flex-direction: column;
     min-width: 0;
+    background: var(--surface-scroll-soft);
 }
 
 .thread-cards {
@@ -1415,6 +1418,9 @@ nav img {
     position: relative;
     display: flex;
     flex-direction: column;
+    overflow-y: scroll;
+    scrollbar-gutter: stable;
+    -webkit-overflow-scrolling: touch;
 }
 
 .scroll-box-loading-overlay {
@@ -1424,7 +1430,7 @@ nav img {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #fff;
+    background: var(--surface-scroll-soft);
     box-sizing: border-box;
 }
 
@@ -1458,11 +1464,8 @@ nav img {
     flex: 1 1 0;
     min-height: 0;
     min-width: 0;
-    overflow-x: hidden;
-    /* Always reserve the gutter so width never changes when content starts to overflow. */
-    overflow-y: scroll;
-    scrollbar-gutter: stable;
-    -webkit-overflow-scrolling: touch;
+    overflow: hidden;
+    background: var(--surface-scroll-soft);
     border: 1px solid #ccc;
     border-radius: 0.35em;
     box-sizing: border-box;
@@ -1484,6 +1487,7 @@ nav img {
     flex: 0 0 auto;
     width: 100%;
     padding: 0.35rem 0 0.45rem;
+    border-top: 1px solid #d6e1e8;
     box-sizing: border-box;
 }
 

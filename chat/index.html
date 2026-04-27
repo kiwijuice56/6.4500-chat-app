@@ -30,8 +30,8 @@
         </p>
     </header>
 
-    <section ref="scrollBoxEl" class="scroll-box scroll-box--loadable">
-        <div class="scroll-box-inner">
+    <section class="scroll-box scroll-box--loadable">
+        <div ref="scrollBoxEl" class="scroll-box-inner">
             <transition name="loading-fade" mode="out-in">
                 <div
                     v-if="messagesLoading"
@@ -60,29 +60,28 @@
                 </div>
             </transition>
         </div>
-    </section>
-
-    <section class="message-container">
-        <form @submit.prevent="sendMessage()">
-            <div class="composer-wrap">
-                <input
-                    ref="messageInputEl"
-                    v-model="myMessage"
-                    type="text"
-                    placeholder="Message…"
-                />
-                <button
-                    type="submit"
-                    class="send-btn"
-                    :disabled="!myMessage.trim().length"
-                    :aria-label="isComposerBusy ? 'Queueing messages' : 'Send message'"
-                    :aria-busy="isComposerBusy"
-                    title="Send"
-                >
-                    <span class="send-icon" aria-hidden="true"></span>
-                </button>
-            </div>
-        </form>
+        <section class="message-container">
+            <form @submit.prevent="sendMessage()">
+                <div class="composer-wrap">
+                    <input
+                        ref="messageInputEl"
+                        v-model="myMessage"
+                        type="text"
+                        placeholder="Message…"
+                    />
+                    <button
+                        type="submit"
+                        class="send-btn"
+                        :disabled="!myMessage.trim().length"
+                        :aria-label="isComposerBusy ? 'Queueing messages' : 'Send message'"
+                        :aria-busy="isComposerBusy"
+                        title="Send"
+                    >
+                        <span class="send-icon" aria-hidden="true"></span>
+                    </button>
+                </div>
+            </form>
+        </section>
     </section>
 
     <modal-window
