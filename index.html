@@ -33,6 +33,11 @@
             <template v-else>
                 <div class="app-layout">
                 <header class="session-bar">
+                    <span
+                        v-if="sessionActorId"
+                        class="session-actor-label"
+                        :title="sessionActorId"
+                    >{{ sessionActorDisplay }}</span>
                     <button
                         type="button"
                         class="thread-card-btn session-auth-btn"

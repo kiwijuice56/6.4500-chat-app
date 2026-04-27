@@ -7,9 +7,8 @@ export default async () => ({
     template: await fetch(new URL("./MessageBubble.html", import.meta.url)).then((r) => r.text()),
 
     props: {
-        message:     { type: Object,  required: true }, // full Graffiti object
+        message:       { type: Object,  required: true }, // full Graffiti object
         threadChannel: { type: String, required: true }, // needed to post tombstone
-        allowed:     { type: Array,   required: true }, // member list for tombstone
     },
 
     setup(props) {
@@ -40,7 +39,6 @@ export default async () => ({
                             targetUrl: props.message.url,
                         },
                         channels: [props.threadChannel],
-                        allowed: props.allowed,
                     },
                     session.value,
                 );

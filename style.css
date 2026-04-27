@@ -42,8 +42,21 @@ body {
 
 .session-bar {
     flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.65rem;
     padding: 0.5rem 0.75rem 0.5rem calc(200px + 1.25rem);
-    text-align: right;
+}
+
+.session-actor-label {
+    font-size: 0.8rem;
+    line-height: 1.2;
+    max-width: min(16rem, 40vw);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #6a8494;
 }
 
 .session-auth-btn {

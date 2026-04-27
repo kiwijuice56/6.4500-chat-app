@@ -1,5 +1,9 @@
 import { ref, computed, watchEffect }        from "vue";
-import { useGraffitiSession, useGraffitiDiscover } from "@graffiti-garden/wrapper-vue";
+import {
+    useGraffitiSession,
+    useGraffitiDiscover,
+    useGraffitiActorToHandle,
+} from "@graffiti-garden/wrapper-vue";
 
 export const CLASS_CHANNEL = "designftw-26";
 
@@ -44,6 +48,17 @@ export function membersOfThread(thread) {
 export function useSharedStore() {
     const session = useGraffitiSession();
 
+    const sessionActorId = computed(() => session.value?.actor ?? "");
+    const { handle: sessionActorHandle } = useGraffitiActorToHandle(sessionActorId);
+    const sessionActorDisplay = computed(() => {
+        const id = sessionActorId.value;
+        if (!id) return "";
+        const h = sessionActorHandle.value;
+        if (h === undefined) return "…";
+        if (h === null) return id;
+        return String(h);
+    });
+
     const { objects: threadObjects } = useGraffitiDiscover(
         () => [CLASS_CHANNEL],
         {
@@ -86,5 +101,5 @@ export function useSharedStore() {
     watchEffect(() => { threads.value             = threadObjects.value; });
     watchEffect(() => { allMembershipEvents.value = membershipObjects.value; });
 
-    return { session };
+    return { session, sessionActorId, sessionActorDisplay };
 }

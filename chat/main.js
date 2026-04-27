@@ -98,6 +98,9 @@ export default async () => {
             async function sendMessage() {
                 if (!myMessage.value.trim() || !activeThread.value) return;
                 isSending.value = true;
+                // Omit `allowed`: with a fixed list, joiners often miss messages until
+                // membership syncs; Graffiti shows channel objects to all discoverers
+                // when `allowed` is absent (@graffiti-garden/wrapper-vue `nt` filter).
                 await graffiti.post(
                     {
                         value: {
@@ -105,7 +108,6 @@ export default async () => {
                             published: Date.now(),
                         },
                         channels: [activeThread.value.value.channel],
-                        allowed: memberActors.value,
                     },
                     session.value,
                 );
