@@ -76,6 +76,7 @@ export default async () => {
 
             const myMessage = ref("");
             const isSending = ref(false);
+            const messageInputEl = ref(null);
             const scrollBoxEl = ref(null);
             const scrollEndEl = ref(null);
 
@@ -93,7 +94,18 @@ export default async () => {
                 });
             }
 
+            function focusComposer() {
+                nextTick(() => {
+                    requestAnimationFrame(() => {
+                        if (messageInputEl.value && !isSending.value) {
+                            messageInputEl.value.focus();
+                        }
+                    });
+                });
+            }
+
             watch(timelineSig, () => scrollChatToBottom(), { flush: "post" });
+            watch(() => activeThread.value?.url, (url) => { if (url) focusComposer(); }, { immediate: true });
 
             async function sendMessage() {
                 if (!myMessage.value.trim() || !activeThread.value) return;
@@ -114,6 +126,7 @@ export default async () => {
                 myMessage.value = "";
                 isSending.value = false;
                 scrollChatToBottom();
+                focusComposer();
             }
 
             async function leaveThread() {
@@ -146,6 +159,7 @@ export default async () => {
                 isSending,
                 sendMessage,
                 leaveThread,
+                messageInputEl,
                 scrollBoxEl,
                 scrollEndEl,
             };

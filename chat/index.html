@@ -24,22 +24,25 @@
 
     <section class="message-container">
         <form @submit.prevent="sendMessage()">
-            <input
-                v-model="myMessage"
-                type="text"
-                placeholder="Message…"
-                :disabled="isSending"
-            />
-            <button
-                type="submit"
-                class="send-btn"
-                :disabled="!myMessage.trim().length || isSending"
-                :aria-label="isSending ? 'Sending message' : 'Send message'"
-                :aria-busy="isSending"
-                title="Send"
-            >
-                <span class="send-icon" aria-hidden="true"></span>
-            </button>
+            <div class="composer-wrap">
+                <input
+                    ref="messageInputEl"
+                    v-model="myMessage"
+                    type="text"
+                    placeholder="Message…"
+                    :disabled="isSending"
+                />
+                <button
+                    type="submit"
+                    class="send-btn"
+                    :disabled="!myMessage.trim().length || isSending"
+                    :aria-label="isSending ? 'Sending message' : 'Send message'"
+                    :aria-busy="isSending"
+                    title="Send"
+                >
+                    <span class="send-icon" aria-hidden="true"></span>
+                </button>
+            </div>
         </form>
     </section>
 </div>
