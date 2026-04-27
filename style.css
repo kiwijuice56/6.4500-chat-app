@@ -313,10 +313,43 @@ nav ul {
     font-synthesis: style;
 }
 
+.bubble-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.45rem;
+}
+
+.bubble-row-own {
+    flex-direction: row-reverse;
+}
+
+.bubble-row-other {
+    padding-left: 0.9rem;
+}
+
+.bubble-avatar {
+    flex: 0 0 2.2rem;
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1em;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    color: rgba(51, 53, 63, 0.88);
+    text-transform: uppercase;
+    user-select: none;
+}
+
 .bubble-wrapper {
     --bubble-bg: #95a2b1;
     background-color: var(--bubble-bg);
     color: white;
+    flex: 1 1 auto;
+    min-width: 0;
     padding: 1em;
     padding-bottom: 0.75em;
     border-radius: 0.6em;
@@ -334,6 +367,10 @@ nav ul {
     background-color: var(--bubble-bg);
     margin-right: 0%;
     margin-left: 25%;
+}
+
+.bubble-other {
+    margin-left: 0.65rem;
 }
 
 /* Softer fill for tombstones (alpha on white scroll area ≈ lower-opacity background). */

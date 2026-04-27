@@ -1,5 +1,9 @@
-import { ref, computed }                    from "vue";
-import { useGraffiti, useGraffitiSession }  from "@graffiti-garden/wrapper-vue";
+import { ref, computed } from "vue";
+import {
+    useGraffiti,
+    useGraffitiSession,
+    useGraffitiActorToHandle,
+} from "@graffiti-garden/wrapper-vue";
 
 const deleteIconUrl = new URL("../images/delete.png", import.meta.url).href;
 
@@ -12,9 +16,11 @@ export default async () => ({
     },
 
     setup(props) {
-        const graffiti   = useGraffiti();
-        const session    = useGraffitiSession();
+        const graffiti = useGraffiti();
+        const session = useGraffitiSession();
         const isDeleting = ref(false);
+        const actor = computed(() => props.message.actor ?? "");
+        const { handle } = useGraffitiActorToHandle(actor);
 
         const isOwn = computed(() =>
             session.value?.actor === props.message.actor,
@@ -23,6 +29,28 @@ export default async () => ({
         const formattedTime = computed(() => {
             const date = new Date(props.message.value.published);
             return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+        });
+
+        const displayName = computed(() => {
+            const actorId = actor.value;
+            if (!actorId) return "";
+            if (handle.value === undefined) return actorId;
+            if (handle.value === null) return actorId;
+            return String(handle.value);
+        });
+
+        const avatarInitials = computed(() =>
+            displayName.value.slice(0, 2).padEnd(2, " ").toUpperCase(),
+        );
+
+        const avatarBgColor = computed(() => {
+            const src = displayName.value || actor.value || "??";
+            let hash = 0;
+            for (let i = 0; i < src.length; i += 1) {
+                hash = (hash * 31 + src.charCodeAt(i)) >>> 0;
+            }
+            const hue = hash % 360;
+            return `hsl(${hue} 70% 82%)`;
         });
 
         async function deleteMessage() {
@@ -48,6 +76,15 @@ export default async () => ({
             }
         }
 
-        return { isOwn, formattedTime, isDeleting, deleteMessage, deleteIconUrl };
+        return {
+            isOwn,
+            formattedTime,
+            isDeleting,
+            deleteMessage,
+            deleteIconUrl,
+            avatarInitials,
+            avatarBgColor,
+            displayName,
+        };
     },
 });

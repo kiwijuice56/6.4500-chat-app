@@ -1,21 +1,23 @@
-<div
-    class="bubble-wrapper"
-    :class="[isOwn ? 'bubble-own' : 'bubble-other', { 'bubble-wrapper-deleted': message.value.tombstone }]"
->
-    <div class="bubble" :class="{ 'bubble-deleted': message.value.tombstone }">
+<div class="bubble-row" :class="isOwn ? 'bubble-row-own' : 'bubble-row-other'">
+    <div
+        class="bubble-avatar"
+        :title="displayName"
+        :style="{ backgroundColor: avatarBgColor }"
+        aria-hidden="true"
+    >{{ avatarInitials }}</div>
+    <div
+        class="bubble-wrapper"
+        :class="[isOwn ? 'bubble-own' : 'bubble-other', { 'bubble-wrapper-deleted': message.value.tombstone }]"
+    >
+        <div class="bubble" :class="{ 'bubble-deleted': message.value.tombstone }">
         <p class="bubble-content" :class="{ 'bubble-content-tombstone': message.value.tombstone }">
             <template v-if="message.value.tombstone"><em class="bubble-tombstone-text">This message was deleted.</em></template>
             <template v-else>{{ message.value.content }}</template>
         </p>
         <div class="bubble-meta">
             <span class="bubble-time">{{ formattedTime }}</span>
-            <span
-                v-if="isOwn && message.value.tombstone"
-                class="bubble-delete-placeholder"
-                aria-hidden="true"
-            ></span>
             <button
-                v-else-if="isOwn"
+                v-if="isOwn && !message.value.tombstone"
                 type="button"
                 class="bubble-delete"
                 :class="{ 'bubble-delete-busy': isDeleting }"
@@ -26,6 +28,8 @@
             >
                 <img :src="deleteIconUrl" alt="" width="22" height="22" />
             </button>
+            <span v-else class="bubble-delete-placeholder" aria-hidden="true"></span>
         </div>
+    </div>
     </div>
 </div>
