@@ -1,5 +1,5 @@
-import { createApp }             from "vue";
-import { createRouter, createWebHashHistory } from "vue-router";
+import { createApp, computed }   from "vue";
+import { createRouter, createWebHashHistory, useRoute } from "vue-router";
 import { GraffitiPlugin }         from "@graffiti-garden/wrapper-vue";
 import { GraffitiDecentralized }  from "@graffiti-garden/implementation-decentralized";
 import { useSharedStore }         from "./store.js";
@@ -21,7 +21,11 @@ const router = createRouter({
 createApp({
     template: "#template",
     setup() {
-        return useSharedStore();
+        const route = useRoute();
+        const appThemeClass = computed(() =>
+            route.path === "/chats" || route.path.startsWith("/chat/") ? "app-theme-chat" : null,
+        );
+        return { ...useSharedStore(), appThemeClass };
     },
 })
     .use(GraffitiPlugin, { graffiti: new GraffitiDecentralized() })

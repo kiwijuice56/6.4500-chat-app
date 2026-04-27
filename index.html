@@ -31,7 +31,7 @@
                 @click="$graffiti.login()"
             >Log In</button>
             <template v-else>
-                <div class="app-layout">
+                <div class="app-layout" :class="appThemeClass">
                 <main>
                     <nav>
                         <ul>
