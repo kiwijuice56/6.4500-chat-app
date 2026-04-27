@@ -1,4 +1,4 @@
-import { createApp, computed, ref, watch, nextTick } from "vue";
+import { createApp, computed, ref, watch, nextTick, onMounted, onUnmounted } from "vue";
 import { createRouter, createWebHashHistory, useRoute } from "vue-router";
 import { GraffitiPlugin }         from "@graffiti-garden/wrapper-vue";
 import { GraffitiDecentralized }  from "@graffiti-garden/implementation-decentralized";
@@ -23,9 +23,18 @@ createApp({
     setup() {
         const route = useRoute();
         const { session, ...storeRest } = useSharedStore();
-        const appThemeClass = computed(() =>
-            route.path === "/chats" || route.path.startsWith("/chat/") ? "app-theme-chat" : null,
-        );
+        const navMobileOpen = ref(false);
+
+        const appLayoutClass = computed(() => {
+            const o = {};
+            if (route.path === "/chats" || route.path.startsWith("/chat/")) {
+                o["app-theme-chat"] = true;
+            }
+            if (navMobileOpen.value) {
+                o["nav-mobile-open"] = true;
+            }
+            return o;
+        });
 
         const bootCoverVisible = ref(true);
         const bootCoverFade = ref(false);
@@ -51,13 +60,42 @@ createApp({
             if (bootCoverFade.value) bootCoverVisible.value = false;
         }
 
+        function toggleNavMobile() {
+            navMobileOpen.value = !navMobileOpen.value;
+        }
+
+        function closeNavMobile() {
+            navMobileOpen.value = false;
+        }
+
+        watch(
+            () => route.fullPath,
+            () => {
+                navMobileOpen.value = false;
+            },
+        );
+
+        function onNavMobileEscape(e) {
+            if (e.key === "Escape") closeNavMobile();
+        }
+
+        onMounted(() => {
+            window.addEventListener("keydown", onNavMobileEscape);
+        });
+        onUnmounted(() => {
+            window.removeEventListener("keydown", onNavMobileEscape);
+        });
+
         return {
             ...storeRest,
             session,
-            appThemeClass,
+            appLayoutClass,
             bootCoverVisible,
             bootCoverFade,
             onBootCoverTransitionEnd,
+            navMobileOpen,
+            toggleNavMobile,
+            closeNavMobile,
         };
     },
 })

@@ -361,6 +361,121 @@ nav img {
     margin-right: 0.5em;
 }
 
+@media (min-width: 720px) {
+    .mobile-nav-bar,
+    .mobile-nav-backdrop {
+        display: none !important;
+    }
+}
+
+@media (max-width: 719px) {
+    .app-layout {
+        --mobile-nav-bar-h: 3.125rem;
+    }
+
+    main {
+        margin-left: 0;
+        flex-direction: column;
+    }
+
+    .mobile-nav-bar {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        height: var(--mobile-nav-bar-h);
+        min-height: var(--mobile-nav-bar-h);
+        padding: 0 0.65rem;
+        box-sizing: border-box;
+        background: #fff;
+        border-bottom: 1px solid #d4dce3;
+        position: sticky;
+        top: 0;
+        z-index: 102;
+    }
+
+    .mobile-nav-bar-title {
+        font-family: "Baloo 2", sans-serif;
+        font-weight: 800;
+        font-size: 1.35rem;
+        color: #5e7787;
+        line-height: 1;
+    }
+
+    .mobile-nav-pancake {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.75rem;
+        height: 2.75rem;
+        padding: 0;
+        border: none;
+        border-radius: 0.4em;
+        background: transparent;
+        cursor: pointer;
+        flex-shrink: 0;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .mobile-nav-pancake:focus-visible {
+        outline: 2px solid rgba(94, 119, 135, 0.45);
+        outline-offset: 2px;
+    }
+
+    .mobile-nav-pancake-icon {
+        display: block;
+        width: 1.55rem;
+        height: 1.55rem;
+        background-color: #5e7787;
+        -webkit-mask: url("images/pancake.png") center / contain no-repeat;
+        mask: url("images/pancake.png") center / contain no-repeat;
+    }
+
+    .mobile-nav-backdrop {
+        position: fixed;
+        left: 0;
+        right: 0;
+        top: var(--mobile-nav-bar-h);
+        bottom: 0;
+        z-index: 100;
+        background: rgba(35, 40, 56, 0.28);
+        touch-action: none;
+    }
+
+    .nav-logo-desktop-only {
+        display: none !important;
+    }
+
+    nav button.nav-active::after {
+        display: none;
+    }
+
+    nav {
+        top: var(--mobile-nav-bar-h);
+        left: 0;
+        right: 0;
+        width: 100%;
+        bottom: auto;
+        max-height: min(28rem, calc(100dvh - var(--mobile-nav-bar-h) - 0.75rem));
+        overflow-y: auto;
+        transform: translateY(-100%);
+        opacity: 0;
+        pointer-events: none;
+        transition:
+            transform 0.22s ease,
+            opacity 0.2s ease;
+        z-index: 101;
+        border-radius: 0 0 0.55rem 0.55rem;
+        box-shadow: 0 0.5rem 1.25rem rgba(37, 34, 48, 0.18);
+        padding-bottom: 0.75rem;
+    }
+
+    .nav-mobile-open nav {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+    }
+}
+
 .appContent {
     display: flex;
     flex-direction: column;

@@ -44,13 +44,32 @@
                         </div>
                     </div>
                     <template v-else>
-                        <div class="app-layout" :class="appThemeClass">
+                        <div class="app-layout" :class="appLayoutClass">
                             <main>
-                                <nav>
+                                <header class="mobile-nav-bar">
+                                    <button
+                                        type="button"
+                                        class="mobile-nav-pancake"
+                                        aria-controls="site-nav"
+                                        :aria-expanded="navMobileOpen"
+                                        aria-label="Menu"
+                                        @click="toggleNavMobile()"
+                                    >
+                                        <span class="mobile-nav-pancake-icon" aria-hidden="true"></span>
+                                    </button>
+                                    <span class="mobile-nav-bar-title">KiwiChat</span>
+                                </header>
+                                <div
+                                    v-show="navMobileOpen"
+                                    class="mobile-nav-backdrop"
+                                    aria-hidden="true"
+                                    @click="closeNavMobile()"
+                                ></div>
+                                <nav id="site-nav">
                                     <ul>
-                                        <li>
+                                        <li class="nav-logo-desktop-only">
                                             <section class="logo">
-                                                <img src="images/kiwi.png" />
+                                                <img src="images/kiwi.png" alt="" />
                                                 KiwiChat
                                             </section>
                                         </li>
@@ -59,11 +78,14 @@
                                                 <button
                                                     type="button"
                                                     class="nav-btn"
-                                                    @click="navigate"
+                                                    @click="
+                                                        navigate();
+                                                        closeNavMobile();
+                                                    "
                                                     :disabled="isActive"
                                                     :class="{ 'nav-active': isActive }"
                                                 >
-                                                    <img src="images/explore.png" /> Explore
+                                                    <img src="images/explore.png" alt="" /> Explore
                                                 </button>
                                             </router-link>
                                         </li>
@@ -72,11 +94,14 @@
                                                 <button
                                                     type="button"
                                                     class="nav-btn"
-                                                    @click="navigate"
+                                                    @click="
+                                                        navigate();
+                                                        closeNavMobile();
+                                                    "
                                                     :disabled="$route.path === '/chats'"
                                                     :class="{ 'nav-active': $route.path === '/chats' || $route.path.startsWith('/chat/') }"
                                                 >
-                                                    <img src="images/chat.png" /> My Chats
+                                                    <img src="images/chat.png" alt="" /> My Chats
                                                 </button>
                                             </router-link>
                                         </li>
@@ -90,7 +115,7 @@
                                         <button
                                             type="button"
                                             class="thread-card-btn session-auth-btn"
-                                            @click="$graffiti.logout(session)"
+                                            @click="$graffiti.logout(session); closeNavMobile();"
                                         >Log Out</button>
                                     </section>
                                 </nav>
