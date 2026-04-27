@@ -40,15 +40,6 @@ body {
     min-height: 0;
 }
 
-.session-bar {
-    flex: 0 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 0.65rem;
-    padding: 0.5rem 0.75rem 0.5rem calc(200px + 1.25rem);
-}
-
 .session-actor-label {
     font-size: 0.8rem;
     line-height: 1.2;
@@ -82,6 +73,32 @@ nav {
     box-sizing: border-box;
     background: linear-gradient(to bottom, #DF8CAA, #916893);
     padding-bottom: 1em;
+    display: flex;
+    flex-direction: column;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-session {
+    margin-top: auto;
+    padding: 0.6rem 0.5rem 0.7rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.nav-session .session-actor-label {
+    color: rgba(255, 255, 255, 0.88);
+    max-width: 100%;
+}
+
+.nav-session .session-auth-btn {
+    min-width: 0;
+    width: 100%;
 }
 
 nav li > * {
@@ -242,6 +259,12 @@ nav img {
     gap: 0.45rem;
 }
 
+.thread-card-note {
+    font-size: 0.72rem;
+    color: #7f8f99;
+    text-align: center;
+}
+
 .thread-card-btn {
     min-width: 5.75rem;
     padding: 0.45em 0.9em;
@@ -328,6 +351,104 @@ nav img {
     padding: 0 0.9em;
 }
 
+.thread-create-floating-btn {
+    position: fixed;
+    right: 1.15rem;
+    bottom: 1rem;
+    z-index: 60;
+    min-width: 10.75rem;
+    min-height: 2.7rem;
+    padding: 0.62rem 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.42rem;
+    box-shadow: 2px 2px 2px rgba(37, 34, 48, 0.29);
+}
+
+.thread-create-floating-icon {
+    width: 0.95em;
+    height: 0.95em;
+    background-color: currentColor;
+    -webkit-mask: url("images/create.png") center / contain no-repeat;
+    mask: url("images/create.png") center / contain no-repeat;
+}
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(35, 40, 56, 0.26);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+}
+
+.modal-card {
+    width: min(44rem, calc(100vw - 2rem));
+    min-height: 11.5rem;
+    border-radius: 0.65rem;
+    background: #fff;
+    box-shadow: 0 16px 40px rgba(29, 33, 47, 0.2);
+    padding: 0.55rem 0.7rem 0.8rem;
+    box-sizing: border-box;
+}
+
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+    transition: opacity 0.1s ease;
+}
+
+.modal-fade-enter-from,
+.modal-fade-leave-to {
+    opacity: 0;
+}
+
+.modal-fade-enter-active .modal-card,
+.modal-fade-leave-active .modal-card {
+    transition: opacity 0.1s ease;
+}
+
+.modal-fade-enter-from .modal-card,
+.modal-fade-leave-to .modal-card {
+    opacity: 0;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    gap: 0.15rem;
+    min-height: 2rem;
+}
+
+.modal-close-btn {
+    margin-right: 0.15rem;
+}
+
+.modal-title {
+    margin: 0;
+    color: #4a6674;
+    font-size: 1.02rem;
+    font-weight: 600;
+}
+
+.modal-body {
+    margin-top: 0.25rem;
+}
+
+.thread-create-modal-row {
+    margin: 0;
+    margin-bottom: 0.65rem;
+}
+
+.modal-create-submit-btn {
+    width: 100%;
+    min-height: 2.25rem;
+    justify-content: center;
+}
+
 .chat-page {
     display: flex;
     flex-direction: column;
@@ -397,15 +518,19 @@ nav img {
     flex: 0 0 auto;
 }
 
+.page-sticky-title {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    margin: 0;
+    padding: 0.3rem 0 0.45rem;
+    background: #fff;
+    color: #4a6674;
+}
+
 .chat-meta {
     margin: 0.25rem 0 0;
     font-size: 0.9em;
-}
-
-nav ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
 }
 
 

@@ -5,6 +5,7 @@ import { CLASS_CHANNEL, threads, membersOfThread } from "../store.js";
 
 export default async () => ({
     template: await fetch(new URL("./index.html", import.meta.url)).then((r) => r.text()),
+    components: { ModalWindow: await (await import("../components/ModalWindow.js")).default() },
     setup() {
         const graffiti = useGraffiti();
         const session  = useGraffitiSession();
@@ -14,13 +15,14 @@ export default async () => ({
         const newTagsInput = ref("");
         const newSizeLimit = ref(5);
         const isCreating   = ref(false);
+        const isCreateModalOpen = ref(false);
 
         const threadsNewestFirst = computed(() =>
             [...threads.value].toSorted((a, b) => (b.value.published ?? 0) - (a.value.published ?? 0)),
         );
 
         async function createThread() {
-            if (isCreating.value) return;
+            if (isCreating.value) return false;
             isCreating.value = true;
             const tags = newTagsInput.value.split(",").map((t) => t.trim()).filter(Boolean);
             const me   = session.value.actor;
@@ -59,9 +61,16 @@ export default async () => ({
                 );
                 newTitle.value     = "";
                 newTagsInput.value = "";
+                return true;
             } finally {
                 isCreating.value = false;
             }
+        }
+
+        async function submitCreateFromModal() {
+            if (!newTitle.value.trim()) return;
+            const ok = await createThread();
+            if (ok) isCreateModalOpen.value = false;
         }
 
         async function joinThread(threadObj) {
@@ -96,7 +105,8 @@ export default async () => ({
             newTagsInput,
             newSizeLimit,
             isCreating,
-            createThread,
+            isCreateModalOpen,
+            submitCreateFromModal,
             joinThread,
             openChat,
         };

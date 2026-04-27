@@ -1,17 +1,3 @@
-<h2>Create a chat</h2>
-<section class="thread-create-row">
-    <input class="thread-create-title" v-model="newTitle" placeholder="Title" :disabled="isCreating" />
-    <input class="thread-create-tags" v-model="newTagsInput" placeholder="Tags (comma-separated)" :disabled="isCreating" />
-    <select class="thread-create-size" v-model.number="newSizeLimit" :disabled="isCreating" aria-label="Chat size">
-        <option :value="2">tiny (2)</option>
-        <option :value="5">small (5)</option>
-        <option :value="10">medium (10)</option>
-        <option :value="30">large (30)</option>
-    </select>
-    <button class="thread-card-btn thread-card-btn-primary thread-create-btn" @click="createThread()" :disabled="isCreating || !newTitle.trim()">{{ isCreating ? "Creating..." : "Create" }}</button>
-</section>
-
-<h2>Browse chats</h2>
 <div class="thread-cards">
     <article v-for="obj of threadsNewestFirst" :key="obj.url" class="thread-card">
         <div class="thread-card-main">
@@ -25,6 +11,7 @@
         </div>
         <div class="thread-card-actions">
             <template v-if="membersOfThread(obj).includes($graffitiSession.value.actor)">
+                <span class="thread-card-note">Already joined</span>
                 <button type="button" class="thread-card-btn" @click="openChat(obj)" :disabled="isCreating">Open</button>
             </template>
             <template v-else-if="membersOfThread(obj).length >= obj.value.sizeLimit">
@@ -36,3 +23,31 @@
         </div>
     </article>
 </div>
+
+<button
+    type="button"
+    class="thread-create-floating-btn thread-card-btn thread-card-btn-primary"
+    @click="isCreateModalOpen = true"
+    :disabled="isCreating"
+>
+    <span class="thread-create-floating-icon" aria-hidden="true"></span>
+    <span>Create new chat</span>
+</button>
+
+<modal-window :open="isCreateModalOpen" title="Create new chat" @close="isCreateModalOpen = false">
+    <section class="thread-create-row thread-create-modal-row">
+        <input class="thread-create-title" v-model="newTitle" placeholder="Title" :disabled="isCreating" />
+        <input class="thread-create-tags" v-model="newTagsInput" placeholder="Tags (comma-separated)" :disabled="isCreating" />
+        <select class="thread-create-size" v-model.number="newSizeLimit" :disabled="isCreating" aria-label="Chat size">
+            <option :value="2">tiny (2)</option>
+            <option :value="5">small (5)</option>
+            <option :value="10">medium (10)</option>
+            <option :value="30">large (30)</option>
+        </select>
+    </section>
+    <button
+        class="thread-card-btn thread-card-btn-primary modal-create-submit-btn"
+        @click="submitCreateFromModal()"
+        :disabled="isCreating || !newTitle.trim()"
+    >{{ isCreating ? "Creating..." : "Create" }}</button>
+</modal-window>

@@ -1,4 +1,3 @@
-<h2>My Chats</h2>
 <p v-if="myThreads.length === 0">You haven't joined any threads yet.</p>
 <div v-else class="thread-cards">
     <article v-for="obj of myThreads" :key="obj.url" class="thread-card">
