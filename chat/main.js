@@ -29,7 +29,10 @@ export default async () => {
     return {
         props: ["threadUrl"],
         template: await fetch(new URL("./index.html", import.meta.url)).then((r) => r.text()),
-        components: { MessageBubble },
+        components: {
+            MessageBubble,
+            ModalWindow: await (await import("../components/ModalWindow.js")).default(),
+        },
         setup() {
             const graffiti = useGraffiti();
             const session = useGraffitiSession();
@@ -48,6 +51,8 @@ export default async () => {
             );
 
             const isDeletingThread = ref(false);
+            const selectedProfile = ref(null);
+            const isProfileModalOpen = computed(() => !!selectedProfile.value);
 
             const chatMetaTitle = computed(() => {
                 const t = activeThread.value?.value;
@@ -354,6 +359,18 @@ export default async () => {
                 }
             }
 
+            function openProfileModal(payload) {
+                if (!payload?.actor) return;
+                selectedProfile.value = {
+                    actor: payload.actor,
+                    displayName: String(payload.displayName || payload.actor),
+                };
+            }
+
+            function closeProfileModal() {
+                selectedProfile.value = null;
+            }
+
             return {
                 session,
                 threadsLoading,
@@ -371,6 +388,10 @@ export default async () => {
                 deleteThread,
                 isThreadOwner,
                 isDeletingThread,
+                selectedProfile,
+                isProfileModalOpen,
+                openProfileModal,
+                closeProfileModal,
                 messageInputEl,
                 scrollBoxEl,
                 scrollEndEl,

@@ -1,10 +1,13 @@
 <div class="bubble-row" :class="isOwn ? 'bubble-row-own' : 'bubble-row-other'">
-    <div
-        class="bubble-avatar"
+    <button
+        type="button"
+        class="bubble-avatar bubble-avatar-btn"
         :title="displayName"
         :style="{ backgroundColor: avatarBgColor }"
-        aria-hidden="true"
-    >{{ avatarInitials }}</div>
+        :aria-label="isOwn ? 'Your profile' : `Open profile for ${displayName}`"
+        :disabled="isOwn"
+        @click="openProfile"
+    >{{ avatarInitials }}</button>
     <div
         class="bubble-wrapper"
         :class="[

@@ -51,6 +51,7 @@
                             :message="obj"
                             :thread-channel="activeThread.value.channel"
                             :is-pending="isPendingMessage(obj)"
+                            @open-profile="openProfileModal"
                         />
                         <li class="scroll-end-anchor-wrap" aria-hidden="true">
                             <div ref="scrollEndEl" class="scroll-end-anchor"></div>
@@ -83,6 +84,33 @@
             </div>
         </form>
     </section>
+
+    <modal-window
+        :open="isProfileModalOpen"
+        :title="selectedProfile?.displayName || ''"
+        @close="closeProfileModal"
+    >
+        <section class="profile-modal-content">
+            <div class="profile-modal-field">
+                <span class="profile-modal-label">Username</span>
+                <span class="profile-modal-value" :title="selectedProfile?.displayName || ''">
+                    {{ selectedProfile?.displayName || "Unknown user" }}
+                </span>
+            </div>
+            <div class="profile-modal-field">
+                <span class="profile-modal-label">Actor</span>
+                <span class="profile-modal-value profile-modal-value-mono" :title="selectedProfile?.actor || ''">
+                    {{ selectedProfile?.actor || "Unavailable" }}
+                </span>
+            </div>
+            <div class="modal-footer">
+                <button
+                    type="button"
+                    class="thread-card-btn thread-card-btn-primary modal-create-submit-btn"
+                >Report</button>
+            </div>
+        </section>
+    </modal-window>
 </div>
 <div v-else-if="threadsLoading" key="chat-route-loading" class="chat-page chat-page-route-loading" role="status" aria-label="Loading chat">
     <div class="chat-route-loading-inner">

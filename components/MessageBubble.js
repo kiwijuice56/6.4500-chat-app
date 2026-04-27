@@ -9,6 +9,7 @@ const deleteIconUrl = new URL("../images/delete.png", import.meta.url).href;
 
 export default async () => ({
     template: await fetch(new URL("./MessageBubble.html", import.meta.url)).then((r) => r.text()),
+    emits: ["open-profile"],
 
     props: {
         message:       { type: Object,  required: true }, // full Graffiti object
@@ -16,7 +17,7 @@ export default async () => ({
         isPending:     { type: Boolean, default: false },
     },
 
-    setup(props) {
+    setup(props, { emit }) {
         const graffiti = useGraffiti();
         const session = useGraffitiSession();
         const isDeleting = ref(false);
@@ -54,6 +55,14 @@ export default async () => ({
             const hue = hash % 360;
             return `hsl(${hue} 70% 82%)`;
         });
+
+        function openProfile() {
+            if (!actor.value || isOwn.value) return;
+            emit("open-profile", {
+                actor: actor.value,
+                displayName: displayName.value,
+            });
+        }
 
         async function deleteMessage() {
             isDeleting.value = true;
@@ -111,6 +120,7 @@ export default async () => ({
             avatarInitials,
             avatarBgColor,
             displayName,
+            openProfile,
         };
     },
 });
