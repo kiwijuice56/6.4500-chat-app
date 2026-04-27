@@ -17,6 +17,7 @@
                 :key="obj.url"
                 :message="obj"
                 :thread-channel="activeThread.value.channel"
+                :is-pending="isPendingMessage(obj)"
             />
         </ul>
         <div ref="scrollEndEl" class="scroll-end-anchor" aria-hidden="true"></div>
@@ -30,14 +31,13 @@
                     v-model="myMessage"
                     type="text"
                     placeholder="Message…"
-                    :disabled="isSending"
                 />
                 <button
                     type="submit"
                     class="send-btn"
-                    :disabled="!myMessage.trim().length || isSending"
-                    :aria-label="isSending ? 'Sending message' : 'Send message'"
-                    :aria-busy="isSending"
+                    :disabled="!myMessage.trim().length"
+                    :aria-label="isComposerBusy ? 'Queueing messages' : 'Send message'"
+                    :aria-busy="isComposerBusy"
                     title="Send"
                 >
                     <span class="send-icon" aria-hidden="true"></span>

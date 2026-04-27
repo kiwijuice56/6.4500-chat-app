@@ -15,6 +15,7 @@ const threadLineSchema = {
                 content: { type: "string" },
                 tombstone: { type: "boolean" },
                 targetUrl: { type: "string" },
+                clientNonce: { type: "string" },
             },
         },
     },
@@ -46,6 +47,9 @@ export default async () => {
                 session,
                 true,
             );
+            const optimisticQueue = ref([]);
+            const optimisticMessages = ref([]);
+            const isFlushingQueue = ref(false);
 
             const sortedMessages = computed(() => {
                 const raw = rawObjects.value;
@@ -63,7 +67,7 @@ export default async () => {
                     return true;
                 });
 
-                return [...visibleMsgs, ...tombstones].toSorted((a, b) => {
+                return [...visibleMsgs, ...optimisticMessages.value, ...tombstones].toSorted((a, b) => {
                     const d = a.value.published - b.value.published;
                     return d !== 0 ? d : a.url.localeCompare(b.url);
                 });
@@ -75,10 +79,12 @@ export default async () => {
             const timelineSig = computed(() => sortedMessages.value.map((o) => o.url).join("\u0001"));
 
             const myMessage = ref("");
-            const isSending = ref(false);
             const messageInputEl = ref(null);
             const scrollBoxEl = ref(null);
             const scrollEndEl = ref(null);
+            const isComposerBusy = computed(() =>
+                isFlushingQueue.value || optimisticQueue.value.length > 0,
+            );
 
             function scrollChatToBottom() {
                 nextTick(() => {
@@ -97,7 +103,7 @@ export default async () => {
             function focusComposer() {
                 nextTick(() => {
                     requestAnimationFrame(() => {
-                        if (messageInputEl.value && !isSending.value) {
+                        if (messageInputEl.value) {
                             messageInputEl.value.focus();
                         }
                     });
@@ -106,27 +112,68 @@ export default async () => {
 
             watch(timelineSig, () => scrollChatToBottom(), { flush: "post" });
             watch(() => activeThread.value?.url, (url) => { if (url) focusComposer(); }, { immediate: true });
+            watch(
+                () => new Set(rawObjects.value.map((o) => o.value.clientNonce).filter(Boolean)),
+                (remoteNonces) => {
+                    optimisticMessages.value = optimisticMessages.value.filter(
+                        (m) => !remoteNonces.has(m.value.clientNonce),
+                    );
+                },
+                { deep: false },
+            );
+
+            async function flushOptimisticQueue() {
+                if (isFlushingQueue.value) return;
+                isFlushingQueue.value = true;
+                try {
+                    while (optimisticQueue.value.length > 0) {
+                        const next = optimisticQueue.value[0];
+                        try {
+                            await graffiti.post(next.payload, session.value);
+                        } catch (err) {
+                            optimisticMessages.value = optimisticMessages.value.filter(
+                                (m) => m.value.clientNonce !== next.clientNonce,
+                            );
+                            console.error(err);
+                        }
+                        optimisticQueue.value.shift();
+                    }
+                } finally {
+                    isFlushingQueue.value = false;
+                }
+            }
+
+            function isPendingMessage(obj) {
+                return String(obj?.url ?? "").startsWith("local:");
+            }
 
             async function sendMessage() {
                 if (!myMessage.value.trim() || !activeThread.value) return;
-                isSending.value = true;
+                const content = myMessage.value.trim();
+                const published = Date.now();
+                const clientNonce = crypto.randomUUID();
+                const payload = {
+                    value: {
+                        content,
+                        published,
+                        clientNonce,
+                    },
+                    channels: [activeThread.value.value.channel],
+                };
+                const localEcho = {
+                    url: `local:${clientNonce}`,
+                    actor: session.value.actor,
+                    value: payload.value,
+                };
+                optimisticQueue.value.push({ payload, clientNonce });
+                optimisticMessages.value.push(localEcho);
+                myMessage.value = "";
+                scrollChatToBottom();
+                focusComposer();
+                flushOptimisticQueue();
                 // Omit `allowed`: with a fixed list, joiners often miss messages until
                 // membership syncs; Graffiti shows channel objects to all discoverers
                 // when `allowed` is absent (@graffiti-garden/wrapper-vue `nt` filter).
-                await graffiti.post(
-                    {
-                        value: {
-                            content: myMessage.value.trim(),
-                            published: Date.now(),
-                        },
-                        channels: [activeThread.value.value.channel],
-                    },
-                    session.value,
-                );
-                myMessage.value = "";
-                isSending.value = false;
-                scrollChatToBottom();
-                focusComposer();
             }
 
             async function leaveThread() {
@@ -156,7 +203,8 @@ export default async () => {
                 sortedMessages,
                 messagesLoading,
                 myMessage,
-                isSending,
+                isComposerBusy,
+                isPendingMessage,
                 sendMessage,
                 leaveThread,
                 messageInputEl,

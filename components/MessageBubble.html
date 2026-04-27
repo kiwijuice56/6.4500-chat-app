@@ -7,7 +7,13 @@
     >{{ avatarInitials }}</div>
     <div
         class="bubble-wrapper"
-        :class="[isOwn ? 'bubble-own' : 'bubble-other', { 'bubble-wrapper-deleted': message.value.tombstone }]"
+        :class="[
+            isOwn ? 'bubble-own' : 'bubble-other',
+            {
+                'bubble-wrapper-deleted': message.value.tombstone,
+                'bubble-wrapper-pending': isPending,
+            },
+        ]"
     >
         <div class="bubble" :class="{ 'bubble-deleted': message.value.tombstone }">
         <p class="bubble-content" :class="{ 'bubble-content-tombstone': message.value.tombstone }">
@@ -17,7 +23,7 @@
         <div class="bubble-meta">
             <span class="bubble-time">{{ formattedTime }}</span>
             <button
-                v-if="isOwn && !message.value.tombstone"
+                v-if="isOwn && !message.value.tombstone && !isPending"
                 type="button"
                 class="bubble-delete"
                 :class="{ 'bubble-delete-busy': isDeleting }"

@@ -13,6 +13,7 @@ export default async () => ({
     props: {
         message:       { type: Object,  required: true }, // full Graffiti object
         threadChannel: { type: String, required: true }, // needed to post tombstone
+        isPending:     { type: Boolean, default: false },
     },
 
     setup(props) {
@@ -70,7 +71,9 @@ export default async () => ({
                     },
                     session.value,
                 );
-                await graffiti.delete({ url: props.message.url }, session.value);
+                if (!props.isPending) {
+                    await graffiti.delete({ url: props.message.url }, session.value);
+                }
             } finally {
                 isDeleting.value = false;
             }
