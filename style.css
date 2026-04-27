@@ -273,6 +273,47 @@ nav img {
     background-color: #ebb4ca;
 }
 
+.thread-create-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0.4rem 0 0.75rem;
+}
+
+.thread-create-row input {
+    min-width: 0;
+    height: 2.15rem;
+    border: 1px solid #c5d0d8;
+    border-radius: 0.35em;
+    padding: 0.35rem 0.55rem;
+    font: inherit;
+    color: inherit;
+    box-sizing: border-box;
+}
+
+.thread-create-title {
+    flex: 1 1 42%;
+}
+
+.thread-create-tags {
+    flex: 1 1 42%;
+}
+
+.thread-create-size {
+    flex: 0 0 5.25rem;
+    text-align: center;
+}
+
+.thread-create-btn {
+    flex: 0 0 auto;
+    height: 2.15rem;
+    min-width: 6.8rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 0.9em;
+}
+
 .chat-page {
     display: flex;
     flex-direction: column;

@@ -1,4 +1,4 @@
-import { ref }                          from "vue";
+import { ref, computed }                from "vue";
 import { useRouter }                    from "vue-router";
 import { useGraffiti, useGraffitiSession } from "@graffiti-garden/wrapper-vue";
 import { CLASS_CHANNEL, threads, membersOfThread } from "../store.js";
@@ -13,45 +13,56 @@ export default async () => ({
         const newTitle     = ref("");
         const newTagsInput = ref("");
         const newSizeLimit = ref(5);
+        const isCreating   = ref(false);
+
+        const threadsNewestFirst = computed(() =>
+            [...threads.value].toSorted((a, b) => (b.value.published ?? 0) - (a.value.published ?? 0)),
+        );
 
         async function createThread() {
+            if (isCreating.value) return;
+            isCreating.value = true;
             const tags = newTagsInput.value.split(",").map((t) => t.trim()).filter(Boolean);
             const me   = session.value.actor;
             const now  = Date.now();
             const channel = crypto.randomUUID();
-            await graffiti.post(
-                {
-                    value: {
-                        activity:  "Create",
-                        type:      "Thread",
-                        title:     newTitle.value.trim(),
-                        tags,
-                        sizeLimit: newSizeLimit.value,
-                        channel,
-                        published: now,
+            try {
+                await graffiti.post(
+                    {
+                        value: {
+                            activity:  "Create",
+                            type:      "Thread",
+                            title:     newTitle.value.trim(),
+                            tags,
+                            sizeLimit: newSizeLimit.value,
+                            channel,
+                            published: now,
+                        },
+                        channels: [CLASS_CHANNEL],
                     },
-                    channels: [CLASS_CHANNEL],
-                },
-                session.value,
-            );
-            // Creator is not represented by a Join in the old model; post Join + allowed
-            // so member counts, ACLs, and message recipients include the host.
-            await graffiti.post(
-                {
-                    value: {
-                        activity:  "Join",
-                        actor:     me,
-                        target:    channel,
-                        published: now,
+                    session.value,
+                );
+                // Creator is not represented by a Join in the old model; post Join + allowed
+                // so member counts, ACLs, and message recipients include the host.
+                await graffiti.post(
+                    {
+                        value: {
+                            activity:  "Join",
+                            actor:     me,
+                            target:    channel,
+                            published: now,
+                        },
+                        channels: [channel],
+                        allowed:  [me],
                     },
-                    channels: [channel],
-                    allowed:  [me],
-                },
-                session.value,
-            );
-            newTitle.value     = "";
-            newTagsInput.value = "";
-            newSizeLimit.value = 5;
+                    session.value,
+                );
+                newTitle.value     = "";
+                newTagsInput.value = "";
+                newSizeLimit.value = 5;
+            } finally {
+                isCreating.value = false;
+            }
         }
 
         async function joinThread(threadObj) {
@@ -78,6 +89,17 @@ export default async () => ({
             router.push(`/chat/${encodeURIComponent(threadObj.url)}`);
         }
 
-        return { session, threads, membersOfThread, newTitle, newTagsInput, newSizeLimit, createThread, joinThread, openChat };
+        return {
+            session,
+            threadsNewestFirst,
+            membersOfThread,
+            newTitle,
+            newTagsInput,
+            newSizeLimit,
+            isCreating,
+            createThread,
+            joinThread,
+            openChat,
+        };
     },
 });

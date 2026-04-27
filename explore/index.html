@@ -1,12 +1,14 @@
 <h2>Create a thread</h2>
-<input v-model="newTitle"            placeholder="Title" />
-<input v-model="newTagsInput"        placeholder="Tags (comma-separated)" />
-<input v-model.number="newSizeLimit" type="number" min="2" placeholder="Size limit" />
-<button @click="createThread()" :disabled="!newTitle.trim()">Create</button>
+<section class="thread-create-row">
+    <input class="thread-create-title" v-model="newTitle" placeholder="Title" :disabled="isCreating" />
+    <input class="thread-create-tags" v-model="newTagsInput" placeholder="Tags (comma-separated)" :disabled="isCreating" />
+    <input class="thread-create-size" v-model.number="newSizeLimit" type="number" min="2" placeholder="Size" :disabled="isCreating" />
+    <button class="thread-card-btn thread-card-btn-primary thread-create-btn" @click="createThread()" :disabled="isCreating || !newTitle.trim()">{{ isCreating ? "Creating..." : "Create" }}</button>
+</section>
 
 <h2>Browse threads</h2>
 <div class="thread-cards">
-    <article v-for="obj of threads" :key="obj.url" class="thread-card">
+    <article v-for="obj of threadsNewestFirst" :key="obj.url" class="thread-card">
         <div class="thread-card-main">
             <h3 class="thread-card-title">{{ obj.value.title }}</h3>
             <p class="thread-card-line thread-card-members">
@@ -18,13 +20,13 @@
         </div>
         <div class="thread-card-actions">
             <template v-if="membersOfThread(obj).includes($graffitiSession.value.actor)">
-                <button type="button" class="thread-card-btn" @click="openChat(obj)">Open</button>
+                <button type="button" class="thread-card-btn" @click="openChat(obj)" :disabled="isCreating">Open</button>
             </template>
             <template v-else-if="membersOfThread(obj).length >= obj.value.sizeLimit">
                 <button type="button" class="thread-card-btn" disabled>Full</button>
             </template>
             <template v-else>
-                <button type="button" class="thread-card-btn thread-card-btn-primary" @click="joinThread(obj)">Join</button>
+                <button type="button" class="thread-card-btn thread-card-btn-primary" @click="joinThread(obj)" :disabled="isCreating">Join</button>
             </template>
         </div>
     </article>
