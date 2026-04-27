@@ -1,4 +1,5 @@
-<div v-if="activeThread" class="chat-page">
+<transition name="chat-route-fade" mode="out-in">
+<div v-if="activeThread" :key="'chat-' + activeThread.url" class="chat-page">
     <header class="chat-header">
         <div class="chat-header-row">
             <router-link to="/chats" custom v-slot="{ navigate }">
@@ -23,22 +24,34 @@
         </p>
     </header>
 
-    <section ref="scrollBoxEl" class="scroll-box">
-        <div v-if="messagesLoading" class="messages-status">Loading messages…</div>
-        <div v-else class="scroll-box-loaded load-reveal-white">
-            <div v-if="sortedMessages.length === 0" class="messages-status">No messages yet. Say hi!</div>
-            <ul v-else class="messages-list">
-                <message-bubble
-                    v-for="obj of sortedMessages"
-                    :key="messageBubbleKey(obj)"
-                    :message="obj"
-                    :thread-channel="activeThread.value.channel"
-                    :is-pending="isPendingMessage(obj)"
-                />
-                <li class="scroll-end-anchor-wrap" aria-hidden="true">
-                    <div ref="scrollEndEl" class="scroll-end-anchor"></div>
-                </li>
-            </ul>
+    <section ref="scrollBoxEl" class="scroll-box scroll-box--loadable">
+        <div class="scroll-box-inner">
+            <transition name="loading-fade" mode="out-in">
+                <div
+                    v-if="messagesLoading"
+                    key="messages-loading"
+                    class="scroll-box-loading-overlay"
+                    role="status"
+                    aria-label="Loading messages"
+                >
+                    <span class="loading-indicator"><span class="loading-indicator-icon" aria-hidden="true"></span></span>
+                </div>
+                <div v-else key="messages-loaded" class="scroll-box-loaded load-reveal-white">
+                    <div v-if="sortedMessages.length === 0" class="messages-status">No messages yet. Say hi!</div>
+                    <ul v-else class="messages-list">
+                        <message-bubble
+                            v-for="obj of sortedMessages"
+                            :key="messageBubbleKey(obj)"
+                            :message="obj"
+                            :thread-channel="activeThread.value.channel"
+                            :is-pending="isPendingMessage(obj)"
+                        />
+                        <li class="scroll-end-anchor-wrap" aria-hidden="true">
+                            <div ref="scrollEndEl" class="scroll-end-anchor"></div>
+                        </li>
+                    </ul>
+                </div>
+            </transition>
         </div>
     </section>
 
@@ -65,4 +78,10 @@
         </form>
     </section>
 </div>
-<div v-else class="messages-status chats-status">Chat not found.</div>
+<div v-else-if="threadsLoading" key="chat-route-loading" class="chat-page chat-page-route-loading" role="status" aria-label="Loading chat">
+    <div class="chat-route-loading-inner">
+        <span class="loading-indicator"><span class="loading-indicator-icon" aria-hidden="true"></span></span>
+    </div>
+</div>
+<div v-else key="chat-not-found" class="messages-status chats-status">Chat not found.</div>
+</transition>

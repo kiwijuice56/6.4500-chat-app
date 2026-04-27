@@ -91,11 +91,9 @@ body {
     pointer-events: auto;
 }
 
-.boot-cover-label {
-    margin: 0;
-    text-align: center;
-    opacity: 0.62;
-    font-size: 0.95em;
+.boot-cover .loading-indicator-icon {
+    width: 1.5rem;
+    height: 1.5rem;
 }
 
 .boot-cover--fade {
@@ -401,6 +399,17 @@ nav img {
     opacity: 0;
 }
 
+/* Chat view: loading spinner ↔ thread UI ↔ not found */
+.chat-route-fade-enter-active,
+.chat-route-fade-leave-active {
+    transition: opacity 0.15s ease;
+}
+
+.chat-route-fade-enter-from,
+.chat-route-fade-leave-to {
+    opacity: 0;
+}
+
 @keyframes load-reveal-white {
     from {
         opacity: 0;
@@ -423,7 +432,7 @@ nav img {
     flex-direction: column;
 }
 
-.scroll-box > .scroll-box-loaded {
+.scroll-box-inner > .scroll-box-loaded {
     flex: 1 1 auto;
     min-height: 0;
     display: flex;
@@ -864,6 +873,20 @@ nav img {
     gap: 0.5rem;
 }
 
+.chat-page-route-loading {
+    justify-content: center;
+    align-items: center;
+}
+
+.chat-route-loading-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1 1 auto;
+    min-height: 8rem;
+    width: 100%;
+}
+
 .chat-header {
     flex: 0 0 auto;
     min-width: 0;
@@ -1144,6 +1167,109 @@ nav img {
     padding: 0.5rem 1.25rem 0.75rem 0;
     margin: 0;
     list-style: none;
+}
+
+.loading-indicator {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.loading-indicator-icon {
+    width: 1.35rem;
+    height: 1.35rem;
+    flex-shrink: 0;
+    background-color: #5e7787;
+    opacity: 0.62;
+    -webkit-mask: url("images/loading.png") center / contain no-repeat;
+    mask: url("images/loading.png") center / contain no-repeat;
+    animation: loading-spin-icon 0.75s linear infinite;
+}
+
+@keyframes loading-spin-icon {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-fade-leave-from {
+    opacity: 1;
+}
+
+.loading-fade-leave-active {
+    transition: opacity 0.1s ease;
+}
+
+.loading-fade-leave-to {
+    opacity: 0;
+}
+
+.chats-list-body {
+    flex: 1 1 0;
+    min-height: 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.chats-list-body-fill {
+    flex: 1 1 0;
+    min-height: 0;
+    min-width: 0;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.chats-list-loading-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    box-sizing: border-box;
+}
+
+.scroll-box--loadable {
+    position: relative;
+}
+
+.scroll-box-inner {
+    flex: 1 1 0;
+    min-height: 0;
+    min-width: 0;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.scroll-box-loading-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    box-sizing: border-box;
+}
+
+/* Pre-mount only: lives inside #app and is replaced by Vue; must not stay on #app or it shrinks .app-shell. */
+.app-initial-mount {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    color: #5e7787;
+    box-sizing: border-box;
 }
 
 .messages-status {

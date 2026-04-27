@@ -16,25 +16,39 @@
         </div>
     </template>
 </ThreadListToolbar>
-<div v-if="threadsLoading" class="messages-status chats-status">Loading...</div>
-<div v-else class="chats-loaded load-reveal-white">
-<div v-if="myThreads.length === 0" class="messages-status chats-status">You haven't joined any chats yet.</div>
-<div v-else-if="filteredMyThreads.length === 0" class="messages-status chats-status">
-    {{ hasFiltersApplied ? "No chats with those filters found. Try broadening your search." : "No chats match that name. Try another title." }}
-</div>
-<div v-else class="thread-cards">
-    <article v-for="obj of filteredMyThreads" :key="obj.url" class="thread-card">
-        <div class="thread-card-main">
-            <h3 class="thread-card-title">{{ obj.value.title }}</h3>
-            <p class="thread-card-line thread-card-meta-row" :title="threadMetaTitle(obj)">
-                {{ membersOfThread(obj).length }} / {{ obj.value.sizeLimit }} joined · {{ obj.value.tags.length ? obj.value.tags.join(", ") : "No tags" }}
-            </p>
-            <ThreadCardLastPreview :preview="lastPreviewByChannel[obj.value.channel] ?? null" />
-        </div>
-        <div class="thread-card-actions thread-card-actions-inline">
-            <button type="button" class="thread-card-btn" @click="leaveThread(obj)">Leave</button>
-            <button type="button" class="thread-card-btn thread-card-btn-primary" @click="openChat(obj)">Open</button>
-        </div>
-    </article>
-</div>
+<div class="chats-list-body">
+    <div class="chats-list-body-fill">
+        <transition name="loading-fade" mode="out-in">
+            <div
+                v-if="threadsLoading"
+                key="chats-loading"
+                class="chats-list-loading-overlay"
+                role="status"
+                aria-label="Loading"
+            >
+                <span class="loading-indicator"><span class="loading-indicator-icon" aria-hidden="true"></span></span>
+            </div>
+            <div v-else key="chats-loaded" class="chats-loaded load-reveal-white">
+                <div v-if="myThreads.length === 0" class="messages-status chats-status">You haven't joined any chats yet.</div>
+                <div v-else-if="filteredMyThreads.length === 0" class="messages-status chats-status">
+                    {{ hasFiltersApplied ? "No chats with those filters found. Try broadening your search." : "No chats match that name. Try another title." }}
+                </div>
+                <div v-else class="thread-cards">
+                    <article v-for="obj of filteredMyThreads" :key="obj.url" class="thread-card">
+                        <div class="thread-card-main">
+                            <h3 class="thread-card-title">{{ obj.value.title }}</h3>
+                            <p class="thread-card-line thread-card-meta-row" :title="threadMetaTitle(obj)">
+                                {{ membersOfThread(obj).length }} / {{ obj.value.sizeLimit }} joined · {{ obj.value.tags.length ? obj.value.tags.join(", ") : "No tags" }}
+                            </p>
+                            <ThreadCardLastPreview :preview="lastPreviewByChannel[obj.value.channel] ?? null" />
+                        </div>
+                        <div class="thread-card-actions thread-card-actions-inline">
+                            <button type="button" class="thread-card-btn" @click="leaveThread(obj)">Leave</button>
+                            <button type="button" class="thread-card-btn thread-card-btn-primary" @click="openChat(obj)">Open</button>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </transition>
+    </div>
 </div>

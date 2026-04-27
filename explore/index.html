@@ -17,32 +17,48 @@
     </template>
 </ThreadListToolbar>
 
-<div v-if="threadsLoading" class="messages-status chats-status">Loading...</div>
-<div v-else-if="filteredThreads.length === 0" class="messages-status chats-status">
-    {{ hasFiltersApplied ? "No chats with those filters found. Try broadening your search." : "No chats yet. Try making one!" }}
+<div class="chats-list-body">
+<div class="chats-list-body-fill">
+<transition name="loading-fade" mode="out-in">
+    <div
+        v-if="threadsLoading"
+        key="explore-loading"
+        class="chats-list-loading-overlay"
+        role="status"
+        aria-label="Loading"
+    >
+        <span class="loading-indicator"><span class="loading-indicator-icon" aria-hidden="true"></span></span>
+    </div>
+    <div v-else key="explore-loaded" class="chats-loaded load-reveal-white">
+        <div v-if="filteredThreads.length === 0" class="messages-status chats-status">
+            {{ hasFiltersApplied ? "No chats with those filters found. Try broadening your search." : "No chats yet. Try making one!" }}
+        </div>
+        <div v-else class="thread-cards">
+            <article v-for="obj of filteredThreads" :key="obj.url" class="thread-card">
+                <div class="thread-card-main">
+                    <h3 class="thread-card-title">{{ obj.value.title }}</h3>
+                    <p class="thread-card-line thread-card-meta-row" :title="threadMetaTitle(obj)">
+                        {{ membersOfThread(obj).length }} / {{ obj.value.sizeLimit }} joined · {{ obj.value.tags.length ? obj.value.tags.join(", ") : "No tags" }}
+                    </p>
+                    <ThreadCardLastPreview :preview="lastPreviewByChannel[obj.value.channel] ?? null" />
+                </div>
+                <div class="thread-card-actions">
+                    <template v-if="membersOfThread(obj).includes($graffitiSession.value.actor)">
+                        <span class="thread-card-note">Already joined</span>
+                        <button type="button" class="thread-card-btn" @click="openChat(obj)" :disabled="isCreating">Open</button>
+                    </template>
+                    <template v-else-if="membersOfThread(obj).length >= obj.value.sizeLimit">
+                        <button type="button" class="thread-card-btn" disabled>Full</button>
+                    </template>
+                    <template v-else>
+                        <button type="button" class="thread-card-btn thread-card-btn-primary" @click="joinThread(obj)" :disabled="isCreating">Join</button>
+                    </template>
+                </div>
+            </article>
+        </div>
+    </div>
+</transition>
 </div>
-<div v-else class="thread-cards">
-    <article v-for="obj of filteredThreads" :key="obj.url" class="thread-card">
-        <div class="thread-card-main">
-            <h3 class="thread-card-title">{{ obj.value.title }}</h3>
-            <p class="thread-card-line thread-card-meta-row" :title="threadMetaTitle(obj)">
-                {{ membersOfThread(obj).length }} / {{ obj.value.sizeLimit }} joined · {{ obj.value.tags.length ? obj.value.tags.join(", ") : "No tags" }}
-            </p>
-            <ThreadCardLastPreview :preview="lastPreviewByChannel[obj.value.channel] ?? null" />
-        </div>
-        <div class="thread-card-actions">
-            <template v-if="membersOfThread(obj).includes($graffitiSession.value.actor)">
-                <span class="thread-card-note">Already joined</span>
-                <button type="button" class="thread-card-btn" @click="openChat(obj)" :disabled="isCreating">Open</button>
-            </template>
-            <template v-else-if="membersOfThread(obj).length >= obj.value.sizeLimit">
-                <button type="button" class="thread-card-btn" disabled>Full</button>
-            </template>
-            <template v-else>
-                <button type="button" class="thread-card-btn thread-card-btn-primary" @click="joinThread(obj)" :disabled="isCreating">Join</button>
-            </template>
-        </div>
-    </article>
 </div>
 
 <button

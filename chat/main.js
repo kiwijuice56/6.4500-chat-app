@@ -1,7 +1,7 @@
 import { ref, computed, watch, nextTick } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useGraffiti, useGraffitiSession, useGraffitiDiscover } from "@graffiti-garden/wrapper-vue";
-import { CLASS_CHANNEL, threads, membersOfThread } from "../store.js";
+import { CLASS_CHANNEL, threads, threadsLoading, membersOfThread } from "../store.js";
 
 /** Non-empty placeholder so discover never receives `[]` channels. */
 const DISCOVER_IDLE_CHANNEL = "__chat_discover_idle__";
@@ -356,6 +356,7 @@ export default async () => {
 
             return {
                 session,
+                threadsLoading,
                 activeThread,
                 memberActors,
                 chatMetaTitle,
