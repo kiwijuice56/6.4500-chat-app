@@ -25,8 +25,10 @@
                 :thread-channel="activeThread.value.channel"
                 :is-pending="isPendingMessage(obj)"
             />
+            <li class="scroll-end-anchor-wrap" aria-hidden="true">
+                <div ref="scrollEndEl" class="scroll-end-anchor"></div>
+            </li>
         </ul>
-        <div ref="scrollEndEl" class="scroll-end-anchor" aria-hidden="true"></div>
     </section>
 
     <section class="message-container">

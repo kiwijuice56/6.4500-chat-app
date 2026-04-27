@@ -103,27 +103,58 @@ export default async () => {
 
             const messagesLoading = computed(() => isFirstPoll.value);
 
-            /** Stable only when visible timeline changes (avoids autopoll deep churn on rawObjects). */
-            const timelineSig = computed(() => sortedMessages.value.map((o) => o.url).join("\u0001"));
-
             const myMessage = ref("");
             const messageInputEl = ref(null);
             const scrollBoxEl = ref(null);
             const scrollEndEl = ref(null);
+            const scrollAnimRunId = ref(0);
             const isComposerBusy = computed(() =>
                 isFlushingQueue.value || optimisticQueue.value.length > 0,
             );
 
-            function scrollChatToBottom() {
+            function isNearBottom(box, thresholdPx = 48) {
+                return box.scrollHeight - box.scrollTop - box.clientHeight <= thresholdPx;
+            }
+
+            /** If newList extends oldList with the same prefix (in order), return appended slice; else null. */
+            function appendedTail(oldList, newList) {
+                if (!newList?.length) return null;
+                if (!oldList?.length) return newList.length ? [...newList] : null;
+                if (newList.length <= oldList.length) return null;
+                for (let i = 0; i < oldList.length; i += 1) {
+                    if (oldList[i].url !== newList[i].url) return null;
+                }
+                return newList.slice(oldList.length);
+            }
+
+            function isChatLineMessage(m) {
+                return typeof m.value?.content === "string" && !m.value?.tombstone;
+            }
+
+            /** Linear ~100ms scroll to bottom; invalidates prior runs via scrollAnimRunId. */
+            function scrollChatToBottomAnimated() {
+                const runId = ++scrollAnimRunId.value;
                 nextTick(() => {
                     requestAnimationFrame(() => {
                         const box = scrollBoxEl.value;
-                        const end = scrollEndEl.value;
-                        if (end) {
-                            end.scrollIntoView({ block: "end", behavior: "auto" });
-                        } else if (box) {
-                            box.scrollTop = box.scrollHeight;
+                        if (!box || runId !== scrollAnimRunId.value) return;
+                        const start = box.scrollTop;
+                        const durationMs = 100;
+                        const t0 = performance.now();
+                        function step(now) {
+                            if (runId !== scrollAnimRunId.value) return;
+                            const b = scrollBoxEl.value;
+                            if (!b) return;
+                            const t = Math.min(1, (now - t0) / durationMs);
+                            const end = b.scrollHeight - b.clientHeight;
+                            if (t >= 1) {
+                                b.scrollTop = end;
+                                return;
+                            }
+                            b.scrollTop = start + (end - start) * t;
+                            requestAnimationFrame(step);
                         }
+                        requestAnimationFrame(step);
                     });
                 });
             }
@@ -138,8 +169,35 @@ export default async () => {
                 });
             }
 
-            watch(timelineSig, () => scrollChatToBottom(), { flush: "post" });
-            watch(() => activeThread.value?.url, (url) => { if (url) focusComposer(); }, { immediate: true });
+            watch(
+                sortedMessages,
+                (newList, oldList) => {
+                    const box = scrollBoxEl.value;
+                    if (!box || oldList === undefined) return;
+                    const wasPinned = isNearBottom(box);
+                    const tail = appendedTail(oldList, newList);
+                    if (!tail?.length) return;
+                    const chatTail = tail.filter(isChatLineMessage);
+                    if (!chatTail.length) return;
+                    const me = session.value?.actor;
+                    const hasIncomingFromOther = chatTail.some(
+                        (m) => m.actor !== me && !isPendingMessage(m),
+                    );
+                    if (hasIncomingFromOther && wasPinned) scrollChatToBottomAnimated();
+                },
+                { flush: "sync" },
+            );
+
+            watch(
+                () => activeThread.value?.url,
+                (url) => {
+                    if (url) {
+                        focusComposer();
+                        scrollChatToBottomAnimated();
+                    }
+                },
+                { immediate: true },
+            );
             watch(
                 () => new Set(rawObjects.value.map((o) => o.value.clientNonce).filter(Boolean)),
                 (remoteNonces) => {
@@ -196,7 +254,7 @@ export default async () => {
                 optimisticQueue.value.push({ payload, clientNonce });
                 optimisticMessages.value.push(localEcho);
                 myMessage.value = "";
-                scrollChatToBottom();
+                scrollChatToBottomAnimated();
                 focusComposer();
                 flushOptimisticQueue();
                 // Omit `allowed`: with a fixed list, joiners often miss messages until
