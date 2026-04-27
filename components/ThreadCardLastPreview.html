@@ -1,0 +1,15 @@
+<div class="thread-card-last-row">
+    <div
+        v-if="preview"
+        class="bubble-avatar thread-card-last-avatar"
+        :title="displayName"
+        :style="{ backgroundColor: avatarBgColor }"
+        aria-hidden="true"
+    >{{ avatarInitials }}</div>
+    <div
+        v-else
+        class="bubble-avatar thread-card-last-avatar thread-card-last-avatar-placeholder"
+        aria-hidden="true"
+    ></div>
+    <span class="thread-card-last-text">{{ preview ? preview.content : "No messages yet" }}</span>
+</div>

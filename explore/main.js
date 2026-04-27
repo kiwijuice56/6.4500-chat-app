@@ -1,11 +1,20 @@
 import { ref, computed }                from "vue";
 import { useRouter }                    from "vue-router";
 import { useGraffiti, useGraffitiSession } from "@graffiti-garden/wrapper-vue";
-import { CLASS_CHANNEL, threads, threadsLoading, membersOfThread } from "../store.js";
+import {
+    CLASS_CHANNEL,
+    threads,
+    threadsLoading,
+    membersOfThread,
+    lastPreviewByChannel,
+} from "../store.js";
 
 export default async () => ({
     template: await fetch(new URL("./index.html", import.meta.url)).then((r) => r.text()),
-    components: { ModalWindow: await (await import("../components/ModalWindow.js")).default() },
+    components: {
+        ModalWindow: await (await import("../components/ModalWindow.js")).default(),
+        ThreadCardLastPreview: await (await import("../components/ThreadCardLastPreview.js")).default(),
+    },
     setup() {
         const graffiti = useGraffiti();
         const session  = useGraffitiSession();
@@ -117,6 +126,11 @@ export default async () => ({
             router.push(`/chat/${encodeURIComponent(threadObj.url)}`);
         }
 
+        function threadMetaTitle(obj) {
+            const tags = obj.value.tags.length ? obj.value.tags.join(", ") : "No tags";
+            return `${membersOfThread(obj).length} / ${obj.value.sizeLimit} joined · ${tags}`;
+        }
+
         return {
             session,
             threadsNewestFirst,
@@ -134,6 +148,8 @@ export default async () => ({
             submitCreateFromModal,
             joinThread,
             openChat,
+            lastPreviewByChannel,
+            threadMetaTitle,
         };
     },
 });

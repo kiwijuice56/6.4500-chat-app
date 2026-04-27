@@ -9,9 +9,8 @@
             <h2 class="chat-title" :title="activeThread.value.title">{{ activeThread.value.title }}</h2>
             <button type="button" class="thread-card-btn chat-leave-btn" @click="leaveThread()">Leave thread</button>
         </div>
-        <p class="chat-meta">
-            Tags: {{ activeThread.value.tags.join(", ") || "none" }} |
-            Members: {{ memberActors.length }} / {{ activeThread.value.sizeLimit }}
+        <p class="thread-card-line thread-card-meta-row chat-header-meta" :title="chatMetaTitle">
+            {{ memberActors.length }} / {{ activeThread.value.sizeLimit }} joined · {{ activeThread.value.tags.length ? activeThread.value.tags.join(", ") : "No tags" }}
         </p>
     </header>
 

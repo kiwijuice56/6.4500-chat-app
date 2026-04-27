@@ -4,6 +4,27 @@ import {
     useGraffitiDiscover,
     useGraffitiActorToHandle,
 } from "@graffiti-garden/wrapper-vue";
+import { visibleChatMessagesFromRaw } from "./visibleChatMessages.js";
+
+/** Non-empty channel list when there are no threads yet. */
+const DISCOVER_THREAD_LINES_IDLE = "__store_thread_lines_idle__";
+
+const threadLineSchema = {
+    properties: {
+        value: {
+            required: ["published"],
+            properties: {
+                published:   { type: "number" },
+                content:     { type: "string" },
+                tombstone:     { type: "boolean" },
+                targetUrl:     { type: "string" },
+                deleted:       { type: "boolean" },
+                statusAt:      { type: "number" },
+                clientNonce:   { type: "string" },
+            },
+        },
+    },
+};
 
 export const CLASS_CHANNEL = "designftw-26";
 
@@ -11,6 +32,7 @@ export const CLASS_CHANNEL = "designftw-26";
 export const threads             = ref([]);
 export const allMembershipEvents = ref([]);
 export const threadsLoading      = ref(true);
+export const threadLineObjects   = ref([]);
 
 export const membersByChannel = computed(() => {
     const latest = {};
@@ -44,6 +66,28 @@ export function membersOfThread(thread) {
     const creator = thread.actor;
     return [...new Set([creator, ...fromEvents].filter(Boolean))];
 }
+
+/** Latest visible message per thread channel (for list previews). */
+export const lastPreviewByChannel = computed(() => {
+    const raw = threadLineObjects.value;
+    const visible = visibleChatMessagesFromRaw(raw);
+    const chans = new Set(threads.value.map((t) => t.value.channel));
+    const best = {};
+    for (const m of visible) {
+        const ch = m.channels?.find((c) => chans.has(c));
+        if (!ch) continue;
+        const pub = m.value.published ?? 0;
+        const cur = best[ch];
+        if (!cur || pub > cur.pub || (pub === cur.pub && m.url > cur.url)) {
+            best[ch] = { pub, url: m.url, actor: m.actor, content: m.value.content };
+        }
+    }
+    const out = {};
+    for (const [ch, v] of Object.entries(best)) {
+        out[ch] = { actor: v.actor, content: v.content };
+    }
+    return out;
+});
 
 // Called once from the root component setup to start the shared discovers
 export function useSharedStore() {
@@ -98,10 +142,23 @@ export function useSharedStore() {
         session,
     );
 
+    const threadLineChannelGetter = () => {
+        const chans = threadObjects.value.map((t) => t.value.channel);
+        return chans.length ? chans : [DISCOVER_THREAD_LINES_IDLE];
+    };
+
+    const { objects: threadLineDiscoverObjects } = useGraffitiDiscover(
+        threadLineChannelGetter,
+        threadLineSchema,
+        session,
+        true,
+    );
+
     // Keep the module-level refs in sync
     watchEffect(() => { threads.value             = threadObjects.value; });
     watchEffect(() => { allMembershipEvents.value = membershipObjects.value; });
     watchEffect(() => { threadsLoading.value      = threadsIsFirstPoll.value; });
+    watchEffect(() => { threadLineObjects.value   = threadLineDiscoverObjects.value; });
 
     return { session, sessionActorId, sessionActorDisplay };
 }

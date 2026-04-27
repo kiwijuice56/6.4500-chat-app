@@ -1,10 +1,13 @@
 import { computed }                     from "vue";
 import { useRouter }                    from "vue-router";
 import { useGraffiti, useGraffitiSession } from "@graffiti-garden/wrapper-vue";
-import { threads, membersOfThread }     from "../store.js";
+import { threads, membersOfThread, lastPreviewByChannel } from "../store.js";
 
 export default async () => ({
     template: await fetch(new URL("./index.html", import.meta.url)).then((r) => r.text()),
+    components: {
+        ThreadCardLastPreview: await (await import("../components/ThreadCardLastPreview.js")).default(),
+    },
     setup() {
         const graffiti = useGraffiti();
         const session  = useGraffitiSession();
@@ -38,6 +41,19 @@ export default async () => ({
             router.push(`/chat/${encodeURIComponent(threadObj.url)}`);
         }
 
-        return { session, myThreads, membersOfThread, leaveThread, openChat };
+        function threadMetaTitle(obj) {
+            const tags = obj.value.tags.length ? obj.value.tags.join(", ") : "No tags";
+            return `${membersOfThread(obj).length} / ${obj.value.sizeLimit} joined · ${tags}`;
+        }
+
+        return {
+            session,
+            myThreads,
+            membersOfThread,
+            leaveThread,
+            openChat,
+            lastPreviewByChannel,
+            threadMetaTitle,
+        };
     },
 });

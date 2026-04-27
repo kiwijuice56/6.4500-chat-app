@@ -40,6 +40,13 @@ export default async () => {
             const activeThread = computed(() => threads.value.find((t) => t.url === threadUrl.value) ?? null);
             const memberActors = computed(() => (activeThread.value ? membersOfThread(activeThread.value) : []));
 
+            const chatMetaTitle = computed(() => {
+                const t = activeThread.value?.value;
+                if (!t) return "";
+                const tags = t.tags?.length ? t.tags.join(", ") : "No tags";
+                return `${memberActors.value.length} / ${t.sizeLimit} joined · ${tags}`;
+            });
+
             const channelGetter = () =>
                 activeThread.value?.value.channel ? [activeThread.value.value.channel] : [DISCOVER_IDLE_CHANNEL];
 
@@ -221,6 +228,7 @@ export default async () => {
                 session,
                 activeThread,
                 memberActors,
+                chatMetaTitle,
                 sortedMessages,
                 messagesLoading,
                 myMessage,

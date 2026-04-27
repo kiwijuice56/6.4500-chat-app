@@ -23,12 +23,10 @@
     <article v-for="obj of filteredThreads" :key="obj.url" class="thread-card">
         <div class="thread-card-main">
             <h3 class="thread-card-title">{{ obj.value.title }}</h3>
-            <p class="thread-card-line thread-card-members">
-                {{ membersOfThread(obj).length }} / {{ obj.value.sizeLimit }} joined
+            <p class="thread-card-line thread-card-meta-row" :title="threadMetaTitle(obj)">
+                {{ membersOfThread(obj).length }} / {{ obj.value.sizeLimit }} joined · {{ obj.value.tags.length ? obj.value.tags.join(", ") : "No tags" }}
             </p>
-            <p class="thread-card-line thread-card-tags">
-                {{ obj.value.tags.length ? obj.value.tags.join(", ") : "No tags" }}
-            </p>
+            <ThreadCardLastPreview :preview="lastPreviewByChannel[obj.value.channel] ?? null" />
         </div>
         <div class="thread-card-actions">
             <template v-if="membersOfThread(obj).includes($graffitiSession.value.actor)">

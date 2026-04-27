@@ -252,6 +252,49 @@ nav img {
     color: #5e7787;
 }
 
+.thread-card-meta-row {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+}
+
+.thread-card-last-row {
+    --thread-last-avatar: 1.0875rem; /* 1.45rem × 0.75 */
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-width: 0;
+    margin-top: 0.1rem;
+}
+
+.thread-card-last-row .bubble-avatar.thread-card-last-avatar {
+    flex: 0 0 var(--thread-last-avatar);
+    width: var(--thread-last-avatar);
+    height: var(--thread-last-avatar);
+    margin-top: 0;
+    font-size: 0.435rem;
+}
+
+.thread-card-last-avatar-placeholder {
+    background: #dde5ea;
+}
+
+.thread-card-last-text {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    min-height: var(--thread-last-avatar);
+    font-size: 0.88em;
+    line-height: var(--thread-last-avatar);
+    color: #5e7787;
+    opacity: 0.62;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .thread-card-actions {
     flex: 0 0 auto;
     display: flex;
@@ -585,6 +628,7 @@ nav img {
 
 .chat-header {
     flex: 0 0 auto;
+    min-width: 0;
 }
 
 .chat-header-row {
@@ -653,9 +697,9 @@ nav img {
     color: #4a6674;
 }
 
-.chat-meta {
+/* Matches explore / my chats thread-card meta line; only header spacing differs */
+.chat-header-meta {
     margin: 0.25rem 0 0;
-    font-size: 0.9em;
 }
 
 
