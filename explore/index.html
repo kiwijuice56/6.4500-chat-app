@@ -1,12 +1,17 @@
-<h2>Create a thread</h2>
+<h2>Create a chat</h2>
 <section class="thread-create-row">
     <input class="thread-create-title" v-model="newTitle" placeholder="Title" :disabled="isCreating" />
     <input class="thread-create-tags" v-model="newTagsInput" placeholder="Tags (comma-separated)" :disabled="isCreating" />
-    <input class="thread-create-size" v-model.number="newSizeLimit" type="number" min="2" placeholder="Size" :disabled="isCreating" />
+    <select class="thread-create-size" v-model.number="newSizeLimit" :disabled="isCreating" aria-label="Chat size">
+        <option :value="2">tiny (2)</option>
+        <option :value="5">small (5)</option>
+        <option :value="10">medium (10)</option>
+        <option :value="30">large (30)</option>
+    </select>
     <button class="thread-card-btn thread-card-btn-primary thread-create-btn" @click="createThread()" :disabled="isCreating || !newTitle.trim()">{{ isCreating ? "Creating..." : "Create" }}</button>
 </section>
 
-<h2>Browse threads</h2>
+<h2>Browse chats</h2>
 <div class="thread-cards">
     <article v-for="obj of threadsNewestFirst" :key="obj.url" class="thread-card">
         <div class="thread-card-main">

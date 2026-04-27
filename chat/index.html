@@ -16,7 +16,8 @@
     </header>
 
     <section ref="scrollBoxEl" class="scroll-box">
-        <p v-if="messagesLoading">Loading messages…</p>
+        <div v-if="messagesLoading" class="messages-status">Loading messages…</div>
+        <div v-else-if="sortedMessages.length === 0" class="messages-status">No messages yet. Say hi!</div>
         <ul v-else class="messages-list">
             <message-bubble
                 v-for="obj of sortedMessages"

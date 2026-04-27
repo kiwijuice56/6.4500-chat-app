@@ -280,7 +280,8 @@ nav img {
     margin: 0.4rem 0 0.75rem;
 }
 
-.thread-create-row input {
+.thread-create-row input,
+.thread-create-row select {
     min-width: 0;
     height: 2.15rem;
     border: 1px solid #c5d0d8;
@@ -289,6 +290,18 @@ nav img {
     font: inherit;
     color: inherit;
     box-sizing: border-box;
+}
+
+.thread-create-row select {
+    background: #fff;
+    -webkit-appearance: none;
+    appearance: none;
+    padding-right: 1.4rem;
+    background-image: linear-gradient(45deg, transparent 50%, #5e7787 50%),
+        linear-gradient(135deg, #5e7787 50%, transparent 50%);
+    background-position: calc(100% - 0.7rem) calc(50% + 1px), calc(100% - 0.45rem) calc(50% + 1px);
+    background-size: 0.26rem 0.26rem, 0.26rem 0.26rem;
+    background-repeat: no-repeat;
 }
 
 .thread-create-title {
@@ -300,7 +313,8 @@ nav img {
 }
 
 .thread-create-size {
-    flex: 0 0 5.25rem;
+    flex: 0 0 8.25rem;
+    min-width: 8.25rem;
     text-align: center;
 }
 
@@ -582,6 +596,17 @@ nav ul {
     padding: 0.5rem 5% 0.75rem 0;
     margin: 0;
     list-style: none;
+}
+
+.messages-status {
+    height: 100%;
+    min-height: 7.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    opacity: 0.62;
+    font-size: 0.95em;
 }
 
 .scroll-box {

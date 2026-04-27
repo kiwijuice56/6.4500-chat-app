@@ -59,7 +59,6 @@ export default async () => ({
                 );
                 newTitle.value     = "";
                 newTagsInput.value = "";
-                newSizeLimit.value = 5;
             } finally {
                 isCreating.value = false;
             }
