@@ -24,12 +24,19 @@
     <body>
         <div id="app">Loading...</div>
         <template id="template">
-            <button
-                v-if="!$graffitiSession.value"
-                type="button"
-                class="thread-card-btn thread-card-btn-primary session-auth-btn"
-                @click="$graffiti.login()"
-            >Log In</button>
+            <div v-if="!$graffitiSession.value" class="login-page">
+                <div class="login-page-inner">
+                    <section class="logo login-page-brand">
+                        <span class="login-page-logo-tint" role="img" aria-hidden="true"></span>
+                        <span class="login-page-brand-text">KiwiChat</span>
+                    </section>
+                    <button
+                        type="button"
+                        class="thread-card-btn thread-card-btn-primary login-page-btn"
+                        @click="$graffiti.login()"
+                    >Log In</button>
+                </div>
+            </div>
             <template v-else>
                 <div class="app-layout" :class="appThemeClass">
                 <main>

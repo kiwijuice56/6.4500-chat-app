@@ -106,6 +106,77 @@ body {
     cursor: pointer;
 }
 
+/* Logged-out gate: centered brand + wide primary button (nav uses .logo on gradient). */
+.login-page {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    box-sizing: border-box;
+    background: #fff;
+    --theme-accent: #d989a9;
+    --theme-accent-hover: #ebb4ca;
+}
+
+.login-page-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.75rem;
+    width: min(22rem, calc(100vw - 2rem));
+}
+
+.login-page .logo.login-page-brand {
+    margin: 0;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.28em;
+    font-family: "Baloo 2", sans-serif;
+    font-weight: 800;
+    font-size: 1.5em;
+    color: var(--theme-accent);
+    background: none;
+    text-align: center;
+    line-height: 1;
+}
+
+.login-page-brand-text {
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+}
+
+/* Solid accent fill in the kiwi silhouette (alpha from PNG), not the bounding box. */
+.login-page-logo-tint {
+    display: inline-block;
+    flex-shrink: 0;
+    height: 1.58em;
+    width: 1.93em;
+    background-color: var(--theme-accent);
+    -webkit-mask-image: url("images/kiwi.png");
+    mask-image: url("images/kiwi.png");
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+}
+
+.login-page-btn {
+    width: 100%;
+    min-height: 2.65rem;
+    font-size: 1.05em;
+    font-weight: 600;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
 main {
     display: flex;
     flex: 1;
