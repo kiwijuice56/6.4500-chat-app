@@ -442,14 +442,15 @@ nav img {
     margin: 0.4rem 0 0.75rem;
 }
 
-.thread-filter-bar {
+/* Sticky search (+ optional filter slot) for explore / my chats */
+.thread-list-toolbar {
     position: sticky;
     top: -0.5rem;
     position: -webkit-sticky;
     z-index: 6;
     display: flex;
-    align-items: flex-end;
-    gap: 0.6rem;
+    flex-direction: column;
+    gap: 0.55rem;
     margin-top: -0.5rem;
     margin-bottom: 0.75rem;
     margin-left: -1em;
@@ -458,6 +459,12 @@ nav img {
     padding-right: 1rem;
     background: #fff;
     box-shadow: 0 1px 3px rgba(37, 34, 48, 0.12);
+}
+
+.thread-toolbar-filter-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.6rem;
 }
 
 .thread-filter-field {
@@ -486,8 +493,8 @@ nav img {
     padding-right: 1.4rem;
 }
 
-.thread-filter-bar input,
-.thread-filter-bar select {
+.thread-list-toolbar input,
+.thread-list-toolbar select {
     min-width: 0;
     height: 2.15rem;
     border: 1px solid #c5d0d8;
@@ -498,7 +505,7 @@ nav img {
     box-sizing: border-box;
 }
 
-.thread-filter-bar select {
+.thread-list-toolbar select {
     background: #fff;
     -webkit-appearance: none;
     appearance: none;

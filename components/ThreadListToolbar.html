@@ -1,0 +1,18 @@
+<section class="thread-list-toolbar">
+    <div class="thread-toolbar-search thread-filter-field">
+        <label class="thread-card-note thread-filter-label" :for="searchInputId">{{ searchLabel }}</label>
+        <input
+            :id="searchInputId"
+            class="thread-create-tags"
+            type="search"
+            autocomplete="off"
+            :value="modelValue"
+            placeholder="Chat title…"
+            :disabled="disabled"
+            @input="$emit('update:modelValue', $event.target.value)"
+        />
+    </div>
+    <div v-if="$slots.filters" class="thread-toolbar-filter-row">
+        <slot name="filters"></slot>
+    </div>
+</section>

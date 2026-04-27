@@ -1,6 +1,27 @@
+<ThreadListToolbar v-model="filterNameInput" search-label="Search by name:">
+    <template #filters>
+        <div class="thread-filter-field">
+            <span class="thread-card-note thread-filter-label">Filter by tags:</span>
+            <input class="thread-create-tags" v-model="filterTagsInput" placeholder="tag1, tag2" />
+        </div>
+        <div class="thread-filter-field thread-filter-size-field">
+            <span class="thread-card-note thread-filter-label">Filter by size:</span>
+            <select class="thread-create-size thread-filter-size" v-model="filterSizeLimit" aria-label="Filter by chat size">
+                <option value="">Any</option>
+                <option :value="2">tiny (2)</option>
+                <option :value="5">small (5)</option>
+                <option :value="10">medium (10)</option>
+                <option :value="30">large (30)</option>
+            </select>
+        </div>
+    </template>
+</ThreadListToolbar>
 <p v-if="myThreads.length === 0">You haven't joined any threads yet.</p>
-<div v-else class="thread-cards">
-    <article v-for="obj of myThreads" :key="obj.url" class="thread-card">
+<div v-if="myThreads.length > 0 && filteredMyThreads.length === 0" class="messages-status chats-status">
+    {{ hasFiltersApplied ? "No chats with those filters found. Try broadening your search." : "No chats match that name. Try another title." }}
+</div>
+<div v-if="myThreads.length > 0 && filteredMyThreads.length > 0" class="thread-cards">
+    <article v-for="obj of filteredMyThreads" :key="obj.url" class="thread-card">
         <div class="thread-card-main">
             <h3 class="thread-card-title">{{ obj.value.title }}</h3>
             <p class="thread-card-line thread-card-meta-row" :title="threadMetaTitle(obj)">

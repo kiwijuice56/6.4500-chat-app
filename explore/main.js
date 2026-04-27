@@ -14,6 +14,7 @@ export default async () => ({
     components: {
         ModalWindow: await (await import("../components/ModalWindow.js")).default(),
         ThreadCardLastPreview: await (await import("../components/ThreadCardLastPreview.js")).default(),
+        ThreadListToolbar: await (await import("../components/ThreadListToolbar.js")).default(),
     },
     setup() {
         const graffiti = useGraffiti();
@@ -23,6 +24,7 @@ export default async () => ({
         const newTitle     = ref("");
         const newTagsInput = ref("");
         const newSizeLimit = ref(5);
+        const filterNameInput = ref("");
         const filterTagsInput = ref("");
         const filterSizeLimit = ref("");
         const isCreating   = ref(false);
@@ -38,7 +40,9 @@ export default async () => ({
                 .filter(Boolean);
             const selectedSize = Number(filterSizeLimit.value);
 
+            const nameQ = filterNameInput.value.trim().toLowerCase();
             return threadsNewestFirst.value.filter((obj) => {
+                if (nameQ && !String(obj.value.title ?? "").toLowerCase().includes(nameQ)) return false;
                 const sizeOk = !filterSizeLimit.value || obj.value.sizeLimit === selectedSize;
                 if (!sizeOk) return false;
                 if (parsedTags.length === 0) return true;
@@ -47,7 +51,9 @@ export default async () => ({
             });
         });
         const hasFiltersApplied = computed(() =>
-            filterTagsInput.value.trim().length > 0 || String(filterSizeLimit.value).length > 0,
+            filterNameInput.value.trim().length > 0 ||
+                filterTagsInput.value.trim().length > 0 ||
+                String(filterSizeLimit.value).length > 0,
         );
 
         async function createThread() {
@@ -138,6 +144,7 @@ export default async () => ({
             newTitle,
             newTagsInput,
             newSizeLimit,
+            filterNameInput,
             filterTagsInput,
             filterSizeLimit,
             isCreating,
