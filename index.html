@@ -82,7 +82,13 @@
                         </section>
                     </nav>
                     <section class="appContent">
-                        <router-view />
+                        <router-view v-slot="{ Component, route }">
+                            <transition name="app-page-fade" mode="out-in">
+                                <div class="appContent-route" :key="route.fullPath">
+                                    <component :is="Component" />
+                                </div>
+                            </transition>
+                        </router-view>
                     </section>
                 </main>
                 </div>

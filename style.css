@@ -60,6 +60,7 @@ main {
     display: flex;
     flex: 1;
     min-height: 0;
+    min-width: 0;
     margin-left: 200px;
 }
 
@@ -197,9 +198,37 @@ nav img {
     flex-direction: column;
     flex: 1;
     min-height: 0;
+    min-width: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #fff;
+}
+
+/* Sync wrapper for route transitions (async views must not be the transition root). */
+.appContent-route {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
     padding: 0.5rem 1rem 1rem 1em;
-    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
     scrollbar-gutter: stable;
+}
+
+/* Route change: brief white fade on main content only (nav unchanged). */
+.app-page-fade-enter-active,
+.app-page-fade-leave-active {
+    transition: opacity 0.1s ease;
+}
+
+.app-page-fade-enter-from,
+.app-page-fade-leave-to {
+    opacity: 0;
 }
 
 .thread-cards {
