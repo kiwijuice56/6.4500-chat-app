@@ -30,11 +30,16 @@
                 placeholder="Message…"
                 :disabled="isSending"
             />
-            <input
+            <button
                 type="submit"
-                :value="isSending ? 'Sending…' : 'Send'"
-                :disabled="!myMessage.length || isSending"
-            />
+                class="send-btn"
+                :disabled="!myMessage.trim().length || isSending"
+                :aria-label="isSending ? 'Sending message' : 'Send message'"
+                :aria-busy="isSending"
+                title="Send"
+            >
+                <span class="send-icon" aria-hidden="true"></span>
+            </button>
         </form>
     </section>
 </div>

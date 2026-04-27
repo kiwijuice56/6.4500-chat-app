@@ -346,14 +346,18 @@ nav ul {
 
 .bubble-wrapper {
     --bubble-bg: #95a2b1;
+    --bubble-pad-start: 1em;
+    --bubble-pad-end: 1em;
     background-color: var(--bubble-bg);
     color: white;
     flex: 1 1 auto;
     min-width: 0;
-    padding: 1em;
+    padding-top: 1em;
+    padding-right: var(--bubble-pad-end);
     padding-bottom: 0.75em;
+    padding-left: var(--bubble-pad-start);
     border-radius: 0.6em;
-    margin-right: 25%;
+    margin-right: 0;
     margin-top: 1em;
     text-wrap: pretty;
     word-break: break-all;
@@ -364,13 +368,18 @@ nav ul {
 
 .bubble-own {
     --bubble-bg: #8a8cbc;
+    --bubble-pad-start: 1em;
+    --bubble-pad-end: 0.8em;
     background-color: var(--bubble-bg);
-    margin-right: 0%;
+    margin-right: 0;
     margin-left: 25%;
 }
 
 .bubble-other {
-    margin-left: 0.65rem;
+    --bubble-pad-start: 0.8em;
+    --bubble-pad-end: 1em;
+    margin-left: 0;
+    margin-right: 25%;
 }
 
 /* Softer fill for tombstones (alpha on white scroll area ≈ lower-opacity background). */
@@ -483,6 +492,43 @@ nav ul {
     border-radius: 0.35em;
 }
 
-.message-container form :last-child {
-    flex: 1;
+.send-btn {
+    flex: 0 0 auto;
+    width: 2.15rem;
+    height: 2rem;
+    margin-left: 0.35rem;
+    border: none;
+    border-radius: 0.35em;
+    background: transparent;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.send-btn:focus-visible {
+    outline: 2px solid rgba(138, 140, 188, 0.55);
+    outline-offset: 2px;
+}
+
+.send-icon {
+    width: 1.2rem;
+    height: 1.2rem;
+    background-color: #8a8cbc; /* match own-bubble blue */
+    -webkit-mask: url("images/send.png") center / contain no-repeat;
+    mask: url("images/send.png") center / contain no-repeat;
+    opacity: 0.92;
+    transition: opacity 0.15s ease;
+}
+
+.send-btn:hover:not(:disabled) .send-icon {
+    opacity: 1;
+}
+
+.send-btn:disabled {
+    cursor: not-allowed;
+}
+
+.send-btn:disabled .send-icon {
+    opacity: 0.35;
 }
