@@ -17,7 +17,7 @@
     </template>
 </ThreadListToolbar>
 <div v-if="threadsLoading" class="messages-status chats-status">Loading...</div>
-<template v-else>
+<div v-else class="chats-loaded load-reveal-white">
 <div v-if="myThreads.length === 0" class="messages-status chats-status">You haven't joined any chats yet.</div>
 <div v-else-if="filteredMyThreads.length === 0" class="messages-status chats-status">
     {{ hasFiltersApplied ? "No chats with those filters found. Try broadening your search." : "No chats match that name. Try another title." }}
@@ -37,4 +37,4 @@
         </div>
     </article>
 </div>
-</template>
+</div>

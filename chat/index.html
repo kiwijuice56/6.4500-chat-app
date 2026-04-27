@@ -25,19 +25,21 @@
 
     <section ref="scrollBoxEl" class="scroll-box">
         <div v-if="messagesLoading" class="messages-status">Loading messages…</div>
-        <div v-else-if="sortedMessages.length === 0" class="messages-status">No messages yet. Say hi!</div>
-        <ul v-else class="messages-list">
-            <message-bubble
-                v-for="obj of sortedMessages"
-                :key="obj.url"
-                :message="obj"
-                :thread-channel="activeThread.value.channel"
-                :is-pending="isPendingMessage(obj)"
-            />
-            <li class="scroll-end-anchor-wrap" aria-hidden="true">
-                <div ref="scrollEndEl" class="scroll-end-anchor"></div>
-            </li>
-        </ul>
+        <div v-else class="scroll-box-loaded load-reveal-white">
+            <div v-if="sortedMessages.length === 0" class="messages-status">No messages yet. Say hi!</div>
+            <ul v-else class="messages-list">
+                <message-bubble
+                    v-for="obj of sortedMessages"
+                    :key="messageBubbleKey(obj)"
+                    :message="obj"
+                    :thread-channel="activeThread.value.channel"
+                    :is-pending="isPendingMessage(obj)"
+                />
+                <li class="scroll-end-anchor-wrap" aria-hidden="true">
+                    <div ref="scrollEndEl" class="scroll-end-anchor"></div>
+                </li>
+            </ul>
+        </div>
     </section>
 
     <section class="message-container">

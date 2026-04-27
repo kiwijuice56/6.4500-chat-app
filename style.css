@@ -63,6 +63,46 @@ body {
     overflow: hidden;
 }
 
+.app-shell {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.app-shell-underlay {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.boot-cover {
+    position: fixed;
+    inset: 0;
+    z-index: 2147483647;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    opacity: 1;
+    transition: opacity 0.25s ease;
+    pointer-events: auto;
+}
+
+.boot-cover-label {
+    margin: 0;
+    text-align: center;
+    opacity: 0.62;
+    font-size: 0.95em;
+}
+
+.boot-cover--fade {
+    opacity: 0;
+    pointer-events: none;
+}
+
 .app-layout {
     display: flex;
     flex-direction: column;
@@ -359,6 +399,36 @@ nav img {
 .app-page-fade-enter-from,
 .app-page-fade-leave-to {
     opacity: 0;
+}
+
+@keyframes load-reveal-white {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.load-reveal-white {
+    background: #fff;
+    opacity: 0;
+    animation: load-reveal-white 0.1s ease forwards;
+}
+
+.chats-loaded {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.scroll-box > .scroll-box-loaded {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
 }
 
 .thread-cards {

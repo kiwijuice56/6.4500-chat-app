@@ -104,7 +104,12 @@ export default async () => {
                     return true;
                 });
 
-                return [...visibleMsgs, ...optimisticMessages.value, ...activeTombstones].toSorted((a, b) => {
+                const remoteNonces = new Set(visibleMsgs.map((m) => m.value?.clientNonce).filter(Boolean));
+                const optimisticDeduped = optimisticMessages.value.filter(
+                    (m) => !m.value?.clientNonce || !remoteNonces.has(m.value.clientNonce),
+                );
+
+                return [...visibleMsgs, ...optimisticDeduped, ...activeTombstones].toSorted((a, b) => {
                     const d = a.value.published - b.value.published;
                     return d !== 0 ? d : a.url.localeCompare(b.url);
                 });
@@ -138,6 +143,15 @@ export default async () => {
 
             function isChatLineMessage(m) {
                 return typeof m.value?.content === "string" && !m.value?.tombstone;
+            }
+
+            function scrollChatToBottomInstant() {
+                scrollAnimRunId.value += 1;
+                nextTick(() => {
+                    const box = scrollBoxEl.value;
+                    if (!box) return;
+                    box.scrollTop = box.scrollHeight - box.clientHeight;
+                });
             }
 
             /** Linear ~100ms scroll to bottom; invalidates prior runs via scrollAnimRunId. */
@@ -202,8 +216,17 @@ export default async () => {
                 (url) => {
                     if (url) {
                         focusComposer();
-                        scrollChatToBottomAnimated();
+                        scrollChatToBottomInstant();
                     }
+                },
+                { immediate: true },
+            );
+
+            watch(
+                messagesLoading,
+                (loading) => {
+                    if (loading) return;
+                    scrollChatToBottomInstant();
                 },
                 { immediate: true },
             );
@@ -240,6 +263,13 @@ export default async () => {
 
             function isPendingMessage(obj) {
                 return String(obj?.url ?? "").startsWith("local:");
+            }
+
+            /** Stable across optimistic → server row so the bubble (avatar) is not remounted. */
+            function messageBubbleKey(obj) {
+                const n = obj.value?.clientNonce;
+                if (n) return `nonce:${n}`;
+                return obj.url;
             }
 
             async function sendMessage() {
@@ -334,6 +364,7 @@ export default async () => {
                 myMessage,
                 isComposerBusy,
                 isPendingMessage,
+                messageBubbleKey,
                 sendMessage,
                 leaveThread,
                 deleteThread,
