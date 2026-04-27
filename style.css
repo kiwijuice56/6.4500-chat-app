@@ -197,7 +197,7 @@ nav img {
     flex-direction: column;
     flex: 1;
     min-height: 0;
-    padding: 0 1rem 1rem 0;
+    padding: 0.5rem 1rem 1rem 0;
     overflow: auto;
 }
 
@@ -259,6 +259,12 @@ nav img {
     gap: 0.45rem;
 }
 
+.thread-card-actions-inline {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+}
+
 .thread-card-note {
     font-size: 0.72rem;
     color: #7f8f99;
@@ -304,7 +310,9 @@ nav img {
 }
 
 .thread-create-row input,
-.thread-create-row select {
+.thread-create-row select,
+.thread-create-modal-form input,
+.thread-create-modal-form select {
     min-width: 0;
     height: 2.15rem;
     border: 1px solid #c5d0d8;
@@ -315,7 +323,8 @@ nav img {
     box-sizing: border-box;
 }
 
-.thread-create-row select {
+.thread-create-row select,
+.thread-create-modal-form select {
     background: #fff;
     -webkit-appearance: none;
     appearance: none;
@@ -394,6 +403,8 @@ nav img {
     box-shadow: 0 16px 40px rgba(29, 33, 47, 0.2);
     padding: 0.55rem 0.7rem 0.8rem;
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
 }
 
 .modal-fade-enter-active,
@@ -436,17 +447,46 @@ nav img {
 
 .modal-body {
     margin-top: 0.25rem;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
 }
 
-.thread-create-modal-row {
+.thread-create-modal-form {
     margin: 0;
-    margin-bottom: 0.65rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+}
+
+.thread-create-modal-field {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+}
+
+.thread-create-modal-label {
+    flex: 0 0 12.5rem;
+    text-align: right;
+    color: #5e7787;
+    font-size: 0.9em;
 }
 
 .modal-create-submit-btn {
     width: 100%;
     min-height: 2.25rem;
     justify-content: center;
+}
+
+.thread-create-modal-form .thread-create-title,
+.thread-create-modal-form .thread-create-tags,
+.thread-create-modal-form .thread-create-size {
+    flex: 1 1 auto;
+}
+
+.modal-footer {
+    margin-top: auto;
+    padding-top: 0.75rem;
 }
 
 .chat-page {

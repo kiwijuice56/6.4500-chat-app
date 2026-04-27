@@ -35,19 +35,30 @@
 </button>
 
 <modal-window :open="isCreateModalOpen" title="Create new chat" @close="isCreateModalOpen = false">
-    <section class="thread-create-row thread-create-modal-row">
-        <input class="thread-create-title" v-model="newTitle" placeholder="Title" :disabled="isCreating" />
-        <input class="thread-create-tags" v-model="newTagsInput" placeholder="Tags (comma-separated)" :disabled="isCreating" />
-        <select class="thread-create-size" v-model.number="newSizeLimit" :disabled="isCreating" aria-label="Chat size">
-            <option :value="2">tiny (2)</option>
-            <option :value="5">small (5)</option>
-            <option :value="10">medium (10)</option>
-            <option :value="30">large (30)</option>
-        </select>
+    <section class="thread-create-modal-form">
+        <div class="thread-create-modal-field">
+            <label class="thread-create-modal-label" for="modal-chat-name">Chat name:</label>
+            <input id="modal-chat-name" class="thread-create-title" v-model="newTitle" placeholder="Title" :disabled="isCreating" />
+        </div>
+        <div class="thread-create-modal-field">
+            <label class="thread-create-modal-label" for="modal-chat-tags">Tags (comma-separated):</label>
+            <input id="modal-chat-tags" class="thread-create-tags" v-model="newTagsInput" placeholder="Tags (comma-separated)" :disabled="isCreating" />
+        </div>
+        <div class="thread-create-modal-field">
+            <label class="thread-create-modal-label" for="modal-chat-size">Size:</label>
+            <select id="modal-chat-size" class="thread-create-size" v-model.number="newSizeLimit" :disabled="isCreating" aria-label="Chat size">
+                <option :value="2">tiny (2)</option>
+                <option :value="5">small (5)</option>
+                <option :value="10">medium (10)</option>
+                <option :value="30">large (30)</option>
+            </select>
+        </div>
     </section>
-    <button
-        class="thread-card-btn thread-card-btn-primary modal-create-submit-btn"
-        @click="submitCreateFromModal()"
-        :disabled="isCreating || !newTitle.trim()"
-    >{{ isCreating ? "Creating..." : "Create" }}</button>
+    <div class="modal-footer">
+        <button
+            class="thread-card-btn thread-card-btn-primary modal-create-submit-btn"
+            @click="submitCreateFromModal()"
+            :disabled="isCreating || !newTitle.trim()"
+        >{{ isCreating ? "Creating..." : "Create" }}</button>
+    </div>
 </modal-window>

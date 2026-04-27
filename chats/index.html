@@ -10,9 +10,9 @@
                 {{ obj.value.tags.length ? obj.value.tags.join(", ") : "No tags" }}
             </p>
         </div>
-        <div class="thread-card-actions">
-            <button type="button" class="thread-card-btn thread-card-btn-primary" @click="openChat(obj)">Open</button>
+        <div class="thread-card-actions thread-card-actions-inline">
             <button type="button" class="thread-card-btn" @click="leaveThread(obj)">Leave</button>
+            <button type="button" class="thread-card-btn thread-card-btn-primary" @click="openChat(obj)">Open</button>
         </div>
     </article>
 </div>
