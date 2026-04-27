@@ -87,7 +87,7 @@ body {
     justify-content: center;
     background: #fff;
     opacity: 1;
-    transition: opacity 0.25s ease;
+    transition: opacity 0.5s ease;
     pointer-events: auto;
 }
 
@@ -1314,10 +1314,14 @@ nav img {
 .message-container {
     flex: 0 0 auto;
     width: 100%;
+    padding: 0.35rem 0 0.45rem;
+    box-sizing: border-box;
 }
 
 .message-container form {
     display: flex;
+    padding: 0 0.2rem;
+    box-sizing: border-box;
 }
 
 .composer-wrap {
@@ -1327,21 +1331,27 @@ nav img {
 
 .composer-wrap > input {
     width: 100%;
-    height: 2.2em;
-    border-radius: 0.35em;
+    min-height: 3.4rem;
+    height: auto;
+    border: 1px solid #c5d0d8;
+    border-radius: 9999px;
     box-sizing: border-box;
-    padding-right: 2.35rem;
+    padding: 0.85rem 1.25rem;
+    padding-right: 3.65rem;
+    font: inherit;
+    color: inherit;
+    line-height: 1.4;
 }
 
 .send-btn {
     position: absolute;
-    right: 0.2rem;
+    right: 0.28rem;
     top: 50%;
     transform: translateY(-50%);
-    width: 1.95rem;
-    height: 1.75rem;
+    width: 2.85rem;
+    height: 2.85rem;
     border: none;
-    border-radius: 0.35em;
+    border-radius: 50%;
     background: transparent;
     cursor: pointer;
     display: inline-flex;
@@ -1355,8 +1365,8 @@ nav img {
 }
 
 .send-icon {
-    width: 1.2rem;
-    height: 1.2rem;
+    width: 1.42rem;
+    height: 1.42rem;
     background-color: #8a8cbc; /* match own-bubble blue */
     -webkit-mask: url("images/send.png") center / contain no-repeat;
     mask: url("images/send.png") center / contain no-repeat;
