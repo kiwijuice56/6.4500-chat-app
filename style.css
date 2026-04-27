@@ -199,6 +199,7 @@ nav img {
     min-height: 0;
     padding: 0.5rem 1rem 1rem 0;
     overflow: auto;
+    scrollbar-gutter: stable;
 }
 
 .thread-cards {
@@ -309,6 +310,78 @@ nav img {
     margin: 0.4rem 0 0.75rem;
 }
 
+.thread-filter-bar {
+    position: sticky;
+    top: 0;
+    z-index: 6;
+    display: flex;
+    align-items: flex-end;
+    gap: 0.6rem;
+    margin-bottom: 0.75rem;
+    padding: 0.15rem 0 0.45rem;
+    background: #fff;
+}
+
+.thread-filter-field {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.thread-filter-size-field {
+    flex: 0 0 8.25rem;
+}
+
+.thread-filter-label {
+    text-align: left;
+}
+
+.thread-filter-size {
+    width: 100%;
+    height: 2.15rem;
+    line-height: 1;
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-left: 0.55rem;
+    padding-right: 1.4rem;
+}
+
+.thread-filter-bar input,
+.thread-filter-bar select {
+    min-width: 0;
+    height: 2.15rem;
+    border: 1px solid #c5d0d8;
+    border-radius: 0.35em;
+    padding: 0.35rem 0.55rem;
+    font: inherit;
+    color: inherit;
+    box-sizing: border-box;
+}
+
+.thread-filter-bar select {
+    background: #fff;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 2.15rem;
+    min-height: 2.15rem;
+    max-height: 2.15rem;
+    line-height: 1;
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-right: 1.4rem;
+    background-image: linear-gradient(45deg, transparent 50%, #5e7787 50%),
+        linear-gradient(135deg, #5e7787 50%, transparent 50%);
+    background-position: calc(100% - 0.7rem) calc(50% + 1px), calc(100% - 0.45rem) calc(50% + 1px);
+    background-size: 0.26rem 0.26rem, 0.26rem 0.26rem;
+    background-repeat: no-repeat;
+}
+
+.chats-status {
+    min-height: 10rem;
+}
+
 .thread-create-row input,
 .thread-create-row select,
 .thread-create-modal-form input,
@@ -328,6 +401,12 @@ nav img {
     background: #fff;
     -webkit-appearance: none;
     appearance: none;
+    height: 2.15rem;
+    min-height: 2.15rem;
+    max-height: 2.15rem;
+    line-height: 1;
+    padding-top: 0;
+    padding-bottom: 0;
     padding-right: 1.4rem;
     background-image: linear-gradient(45deg, transparent 50%, #5e7787 50%),
         linear-gradient(135deg, #5e7787 50%, transparent 50%);

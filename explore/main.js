@@ -1,7 +1,7 @@
 import { ref, computed }                from "vue";
 import { useRouter }                    from "vue-router";
 import { useGraffiti, useGraffitiSession } from "@graffiti-garden/wrapper-vue";
-import { CLASS_CHANNEL, threads, membersOfThread } from "../store.js";
+import { CLASS_CHANNEL, threads, threadsLoading, membersOfThread } from "../store.js";
 
 export default async () => ({
     template: await fetch(new URL("./index.html", import.meta.url)).then((r) => r.text()),
@@ -14,11 +14,31 @@ export default async () => ({
         const newTitle     = ref("");
         const newTagsInput = ref("");
         const newSizeLimit = ref(5);
+        const filterTagsInput = ref("");
+        const filterSizeLimit = ref("");
         const isCreating   = ref(false);
         const isCreateModalOpen = ref(false);
 
         const threadsNewestFirst = computed(() =>
             [...threads.value].toSorted((a, b) => (b.value.published ?? 0) - (a.value.published ?? 0)),
+        );
+        const filteredThreads = computed(() => {
+            const parsedTags = filterTagsInput.value
+                .split(",")
+                .map((t) => t.trim().toLowerCase())
+                .filter(Boolean);
+            const selectedSize = Number(filterSizeLimit.value);
+
+            return threadsNewestFirst.value.filter((obj) => {
+                const sizeOk = !filterSizeLimit.value || obj.value.sizeLimit === selectedSize;
+                if (!sizeOk) return false;
+                if (parsedTags.length === 0) return true;
+                const threadTags = (obj.value.tags ?? []).map((t) => String(t).toLowerCase());
+                return parsedTags.some((tag) => threadTags.includes(tag));
+            });
+        });
+        const hasFiltersApplied = computed(() =>
+            filterTagsInput.value.trim().length > 0 || String(filterSizeLimit.value).length > 0,
         );
 
         async function createThread() {
@@ -104,8 +124,13 @@ export default async () => ({
             newTitle,
             newTagsInput,
             newSizeLimit,
+            filterTagsInput,
+            filterSizeLimit,
             isCreating,
             isCreateModalOpen,
+            filteredThreads,
+            threadsLoading,
+            hasFiltersApplied,
             submitCreateFromModal,
             joinThread,
             openChat,

@@ -10,6 +10,7 @@ export const CLASS_CHANNEL = "designftw-26";
 // Module-level singletons shared across all route components
 export const threads             = ref([]);
 export const allMembershipEvents = ref([]);
+export const threadsLoading      = ref(true);
 
 export const membersByChannel = computed(() => {
     const latest = {};
@@ -59,7 +60,7 @@ export function useSharedStore() {
         return String(h);
     });
 
-    const { objects: threadObjects } = useGraffitiDiscover(
+    const { objects: threadObjects, isFirstPoll: threadsIsFirstPoll } = useGraffitiDiscover(
         () => [CLASS_CHANNEL],
         {
             properties: {
@@ -100,6 +101,7 @@ export function useSharedStore() {
     // Keep the module-level refs in sync
     watchEffect(() => { threads.value             = threadObjects.value; });
     watchEffect(() => { allMembershipEvents.value = membershipObjects.value; });
+    watchEffect(() => { threadsLoading.value      = threadsIsFirstPoll.value; });
 
     return { session, sessionActorId, sessionActorDisplay };
 }
