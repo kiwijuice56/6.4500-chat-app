@@ -16,7 +16,13 @@
                     @click="deleteThread()"
                     :disabled="isDeletingThread"
                 >{{ isDeletingThread ? "Deleting…" : "Delete chat" }}</button>
-                <button type="button" class="thread-card-btn chat-leave-btn" @click="leaveThread()">Leave chat</button>
+                <button
+                    type="button"
+                    class="thread-card-btn chat-leave-btn"
+                    :disabled="isThreadOwner"
+                    :title="isThreadOwner ? 'Chat owners use Delete chat instead of leaving.' : 'Leave this chat'"
+                    @click="leaveThread()"
+                >Leave chat</button>
             </div>
         </div>
         <p class="thread-card-line thread-card-meta-row chat-header-meta" :title="chatMetaTitle">
