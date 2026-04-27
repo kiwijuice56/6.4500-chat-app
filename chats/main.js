@@ -1,7 +1,7 @@
 import { computed }                     from "vue";
 import { useRouter }                    from "vue-router";
 import { useGraffiti, useGraffitiSession } from "@graffiti-garden/wrapper-vue";
-import { threads, membersOf }           from "../store.js";
+import { threads, membersOfThread }     from "../store.js";
 
 export default async () => ({
     template: await fetch(new URL("./index.html", import.meta.url)).then((r) => r.text()),
@@ -13,7 +13,7 @@ export default async () => ({
         const myThreads = computed(() => {
             const me = session.value?.actor;
             if (!me) return [];
-            return threads.value.filter((t) => membersOf(t.value.channel).includes(me));
+            return threads.value.filter((t) => membersOfThread(t).includes(me));
         });
 
         async function leaveThread(threadObj) {
@@ -28,7 +28,7 @@ export default async () => ({
                         published: Date.now(),
                     },
                     channels: [threadChannel],
-                    allowed:  membersOf(threadChannel),
+                    allowed:  membersOfThread(threadObj),
                 },
                 session.value,
             );
@@ -38,6 +38,6 @@ export default async () => ({
             router.push(`/chat/${encodeURIComponent(threadObj.url)}`);
         }
 
-        return { session, myThreads, membersOf, leaveThread, openChat };
+        return { session, myThreads, membersOfThread, leaveThread, openChat };
     },
 });

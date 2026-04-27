@@ -1,7 +1,7 @@
 import { ref, computed, watch, nextTick } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useGraffiti, useGraffitiSession, useGraffitiDiscover } from "@graffiti-garden/wrapper-vue";
-import { threads, membersOf } from "../store.js";
+import { threads, membersOfThread } from "../store.js";
 
 /** Non-empty placeholder so discover never receives `[]` channels. */
 const DISCOVER_IDLE_CHANNEL = "__chat_discover_idle__";
@@ -35,7 +35,7 @@ export default async () => {
 
             const threadUrl = computed(() => decodeURIComponent(route.params.threadUrl));
             const activeThread = computed(() => threads.value.find((t) => t.url === threadUrl.value) ?? null);
-            const memberActors = computed(() => (activeThread.value ? membersOf(activeThread.value.value.channel) : []));
+            const memberActors = computed(() => (activeThread.value ? membersOfThread(activeThread.value) : []));
 
             const channelGetter = () =>
                 activeThread.value?.value.channel ? [activeThread.value.value.channel] : [DISCOVER_IDLE_CHANNEL];
@@ -127,7 +127,7 @@ export default async () => {
                             published: Date.now(),
                         },
                         channels: [threadChannel],
-                        allowed: membersOf(threadChannel),
+                        allowed: membersOfThread(activeThread.value),
                     },
                     session.value,
                 );

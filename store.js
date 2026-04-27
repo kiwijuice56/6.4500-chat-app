@@ -12,8 +12,10 @@ export const membersByChannel = computed(() => {
     for (const obj of allMembershipEvents.value) {
         const { actor, activity, published, target } = obj.value;
         if (!latest[target]) latest[target] = {};
-        if (!latest[target][actor] || published > latest[target][actor].published) {
-            latest[target][actor] = { activity, published };
+        const pub = published ?? 0;
+        const prevPub = latest[target][actor]?.published ?? 0;
+        if (!latest[target][actor] || pub > prevPub) {
+            latest[target][actor] = { activity, published: pub };
         }
     }
     const result = {};
@@ -27,6 +29,15 @@ export const membersByChannel = computed(() => {
 
 export function membersOf(threadChannel) {
     return membersByChannel.value[threadChannel] ?? [];
+}
+
+/** All participants: Join/Leave membership plus the thread's creator (Create author never had a Join in older data). */
+export function membersOfThread(thread) {
+    if (!thread?.value?.channel) return [];
+    const ch = thread.value.channel;
+    const fromEvents = membersByChannel.value[ch] ?? [];
+    const creator = thread.actor;
+    return [...new Set([creator, ...fromEvents].filter(Boolean))];
 }
 
 // Called once from the root component setup to start the shared discovers
@@ -46,6 +57,7 @@ export function useSharedStore() {
                         tags:      { type: "array", items: { type: "string" } },
                         sizeLimit: { type: "number" },
                         channel:   { type: "string" },
+                        published: { type: "number" },
                     },
                 },
             },
@@ -59,9 +71,10 @@ export function useSharedStore() {
                 value: {
                     required: ["activity", "actor", "target"],
                     properties: {
-                        activity: { type: "string", enum: ["Join", "Leave"] },
-                        actor:    { type: "string" },
-                        target:   { type: "string" },
+                        activity:  { type: "string", enum: ["Join", "Leave"] },
+                        actor:     { type: "string" },
+                        target:    { type: "string" },
+                        published: { type: "number" },
                     },
                 },
             },

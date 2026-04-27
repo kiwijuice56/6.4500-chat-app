@@ -5,7 +5,7 @@
         <div class="thread-card-main">
             <h3 class="thread-card-title">{{ obj.value.title }}</h3>
             <p class="thread-card-line thread-card-members">
-                {{ membersOf(obj.value.channel).length }} / {{ obj.value.sizeLimit }} joined
+                {{ membersOfThread(obj).length }} / {{ obj.value.sizeLimit }} joined
             </p>
             <p class="thread-card-line thread-card-tags">
                 {{ obj.value.tags.length ? obj.value.tags.join(", ") : "No tags" }}
