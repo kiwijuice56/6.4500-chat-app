@@ -50,6 +50,7 @@
                             :key="messageBubbleKey(obj)"
                             :message="obj"
                             :thread-channel="activeThread.value.channel"
+                            :thread-owner-actor="activeThread.actor"
                             :is-pending="isPendingMessage(obj)"
                             @open-profile="openProfileModal"
                         />

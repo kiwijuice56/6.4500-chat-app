@@ -6,6 +6,7 @@ import {
 } from "@graffiti-garden/wrapper-vue";
 
 const deleteIconUrl = new URL("../images/delete.png", import.meta.url).href;
+const crownIconUrl = new URL("../images/crown.png", import.meta.url).href;
 
 export default async () => ({
     template: await fetch(new URL("./MessageBubble.html", import.meta.url)).then((r) => r.text()),
@@ -14,6 +15,7 @@ export default async () => ({
     props: {
         message:       { type: Object,  required: true }, // full Graffiti object
         threadChannel: { type: String, required: true }, // needed to post tombstone
+        threadOwnerActor: { type: String, default: "" },
         isPending:     { type: Boolean, default: false },
     },
 
@@ -27,6 +29,9 @@ export default async () => ({
 
         const isOwn = computed(() =>
             session.value?.actor === props.message.actor,
+        );
+        const isThreadOwnerMessage = computed(() =>
+            !!props.threadOwnerActor && props.message.actor === props.threadOwnerActor,
         );
 
         const formattedTime = computed(() => {
@@ -117,9 +122,11 @@ export default async () => ({
             deleteMessage,
             undeleteMessage,
             deleteIconUrl,
+            crownIconUrl,
             avatarInitials,
             avatarBgColor,
             displayName,
+            isThreadOwnerMessage,
             openProfile,
         };
     },

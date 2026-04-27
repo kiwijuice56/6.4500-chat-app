@@ -1,13 +1,27 @@
 <div class="bubble-row" :class="isOwn ? 'bubble-row-own' : 'bubble-row-other'">
-    <button
-        type="button"
-        class="bubble-avatar bubble-avatar-btn"
-        :title="displayName"
-        :style="{ backgroundColor: avatarBgColor }"
-        :aria-label="isOwn ? 'Your profile' : `Open profile for ${displayName}`"
-        :disabled="isOwn"
-        @click="openProfile"
-    >{{ avatarInitials }}</button>
+    <div class="bubble-avatar-wrap">
+        <span
+            v-if="isThreadOwnerMessage"
+            class="bubble-avatar-crown"
+            :style="{
+                backgroundColor: avatarBgColor,
+                WebkitMaskImage: `url(${crownIconUrl})`,
+                maskImage: `url(${crownIconUrl})`,
+            }"
+            role="img"
+            aria-label="Chat owner"
+            title="Chat owner"
+        ></span>
+        <button
+            type="button"
+            class="bubble-avatar bubble-avatar-btn"
+            :title="displayName"
+            :style="{ backgroundColor: avatarBgColor }"
+            :aria-label="isOwn ? 'Your profile' : `Open profile for ${displayName}`"
+            :disabled="isOwn"
+            @click="openProfile"
+        >{{ avatarInitials }}</button>
+    </div>
     <div
         class="bubble-wrapper"
         :class="[
