@@ -20,6 +20,7 @@ export default async () => ({
         const graffiti = useGraffiti();
         const session = useGraffitiSession();
         const isDeleting = ref(false);
+        const isRestoring = ref(false);
         const actor = computed(() => props.message.actor ?? "");
         const { handle } = useGraffitiActorToHandle(actor);
 
@@ -57,25 +58,45 @@ export default async () => ({
         async function deleteMessage() {
             isDeleting.value = true;
             try {
-                // 1. Post a tombstone into the same channel so all members see it.
-                //    It uses the original published timestamp so it sorts into the
-                //    same position in the timeline as the deleted message.
+                // Soft-delete event (reversible): "deleted=true" for this target.
                 await graffiti.post(
                     {
                         value: {
                             tombstone: true,
                             published: props.message.value.published,
                             targetUrl: props.message.url,
+                            deleted: true,
+                            statusAt: Date.now(),
                         },
                         channels: [props.threadChannel],
                     },
                     session.value,
                 );
-                if (!props.isPending) {
-                    await graffiti.delete({ url: props.message.url }, session.value);
-                }
             } finally {
                 isDeleting.value = false;
+            }
+        }
+
+        async function undeleteMessage() {
+            if (!props.message.value?.targetUrl) return;
+            isRestoring.value = true;
+            try {
+                await graffiti.post(
+                    {
+                        value: {
+                            tombstone: true,
+                            // Keep same timeline slot target for tombstone rows.
+                            published: props.message.value.published,
+                            targetUrl: props.message.value.targetUrl,
+                            deleted: false,
+                            statusAt: Date.now(),
+                        },
+                        channels: [props.threadChannel],
+                    },
+                    session.value,
+                );
+            } finally {
+                isRestoring.value = false;
             }
         }
 
@@ -83,7 +104,9 @@ export default async () => ({
             isOwn,
             formattedTime,
             isDeleting,
+            isRestoring,
             deleteMessage,
+            undeleteMessage,
             deleteIconUrl,
             avatarInitials,
             avatarBgColor,

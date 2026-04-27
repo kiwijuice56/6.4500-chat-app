@@ -15,6 +15,8 @@ const threadLineSchema = {
                 content: { type: "string" },
                 tombstone: { type: "boolean" },
                 targetUrl: { type: "string" },
+                deleted: { type: "boolean" },
+                statusAt: { type: "number" },
                 clientNonce: { type: "string" },
             },
         },
@@ -53,21 +55,40 @@ export default async () => {
 
             const sortedMessages = computed(() => {
                 const raw = rawObjects.value;
-                const tombstones = raw.filter((o) => o.value.tombstone === true);
+                const statusEvents = raw.filter((o) => o.value.tombstone === true);
                 const messages = raw.filter((o) => typeof o.value.content === "string" && !o.value.tombstone);
+                const latestByTarget = new Map();
+                const legacyDeletedPublished = new Set();
 
-                const removedByUrl = new Set(tombstones.map((t) => t.value.targetUrl).filter(Boolean));
-                const legacyTombPublished = new Set(
-                    tombstones.filter((t) => !t.value.targetUrl).map((t) => t.value.published),
-                );
+                for (const evt of statusEvents) {
+                    const target = evt.value.targetUrl;
+                    if (!target) {
+                        if (evt.value.deleted !== false) legacyDeletedPublished.add(evt.value.published);
+                        continue;
+                    }
+                    const prev = latestByTarget.get(target);
+                    const curStamp = evt.value.statusAt ?? evt.value.published ?? 0;
+                    const prevStamp = prev ? (prev.value.statusAt ?? prev.value.published ?? 0) : -1;
+                    if (!prev || curStamp > prevStamp || (curStamp === prevStamp && evt.url > prev.url)) {
+                        latestByTarget.set(target, evt);
+                    }
+                }
+                const removedByUrl = new Set();
+                const activeTombstones = [];
+                for (const [targetUrl, evt] of latestByTarget.entries()) {
+                    if (evt.value.deleted !== false) {
+                        removedByUrl.add(targetUrl);
+                        activeTombstones.push(evt);
+                    }
+                }
 
                 const visibleMsgs = messages.filter((m) => {
                     if (removedByUrl.has(m.url)) return false;
-                    if (legacyTombPublished.has(m.value.published)) return false;
+                    if (legacyDeletedPublished.has(m.value.published)) return false;
                     return true;
                 });
 
-                return [...visibleMsgs, ...optimisticMessages.value, ...tombstones].toSorted((a, b) => {
+                return [...visibleMsgs, ...optimisticMessages.value, ...activeTombstones].toSorted((a, b) => {
                     const d = a.value.published - b.value.published;
                     return d !== 0 ? d : a.url.localeCompare(b.url);
                 });

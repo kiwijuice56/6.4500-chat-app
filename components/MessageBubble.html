@@ -17,7 +17,16 @@
     >
         <div class="bubble" :class="{ 'bubble-deleted': message.value.tombstone }">
         <p class="bubble-content" :class="{ 'bubble-content-tombstone': message.value.tombstone }">
-            <template v-if="message.value.tombstone"><em class="bubble-tombstone-text">This message was deleted.</em></template>
+            <template v-if="message.value.tombstone">
+                <em class="bubble-tombstone-text">This message was deleted.</em>
+                <button
+                    v-if="isOwn"
+                    type="button"
+                    class="bubble-undo-link"
+                    @click="undeleteMessage"
+                    :disabled="isRestoring"
+                >{{ isRestoring ? "Undoing..." : "Undo" }}</button>
+            </template>
             <template v-else>{{ message.value.content }}</template>
         </p>
         <div class="bubble-meta">

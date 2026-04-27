@@ -313,6 +313,28 @@ nav ul {
     font-synthesis: style;
 }
 
+.bubble-undo-link {
+    margin-left: 0.45rem;
+    border: none;
+    padding: 0;
+    background: transparent;
+    color: inherit;
+    font-size: 0.86em;
+    font-style: italic;
+    text-decoration: underline;
+    cursor: pointer;
+    opacity: 0.92;
+}
+
+.bubble-undo-link:hover:not(:disabled) {
+    opacity: 1;
+}
+
+.bubble-undo-link:disabled {
+    cursor: wait;
+    opacity: 0.55;
+}
+
 .bubble-row {
     display: flex;
     align-items: flex-end;
