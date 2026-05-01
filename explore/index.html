@@ -61,15 +61,18 @@
 </div>
 </div>
 
-<button
-    type="button"
-    class="thread-create-floating-btn thread-card-btn thread-card-btn-primary"
-    @click="isCreateModalOpen = true"
-    :disabled="isCreating"
->
-    <span class="thread-create-floating-icon" aria-hidden="true"></span>
-    <span>Create new chat</span>
-</button>
+<div class="thread-create-floating-shell">
+    <div class="thread-create-floating-rainbow-ring" aria-hidden="true"></div>
+    <button
+        type="button"
+        class="thread-create-floating-btn"
+        @click="isCreateModalOpen = true"
+        :disabled="isCreating"
+    >
+        <span class="thread-create-floating-icon" aria-hidden="true"></span>
+        <span>Create new chat</span>
+    </button>
+</div>
 
 <modal-window :open="isCreateModalOpen" title="Create new chat" @close="isCreateModalOpen = false">
     <section class="thread-create-modal-form">

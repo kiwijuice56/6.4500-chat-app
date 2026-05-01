@@ -853,11 +853,60 @@ nav img {
     padding: 0 0.9em;
 }
 
-.thread-create-floating-btn {
+/* Fixed shell: rainbow ring (2 hue cycles, rotated) + nav-gradient create button */
+.thread-create-floating-shell {
     position: fixed;
     right: 1.15rem;
     bottom: 1rem;
     z-index: 60;
+    padding: 3px;
+    border-radius: 0.65em;
+    display: inline-flex;
+    box-sizing: border-box;
+    overflow: hidden;
+    box-shadow: 2px 2px 2px rgba(37, 34, 48, 0.29);
+}
+
+.thread-create-floating-rainbow-ring {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 400%;
+    height: 400%;
+    z-index: 0;
+    transform: translate(-50%, -50%);
+    /* Two full hue cycles around the ring; slow rotation shifts hue at the outline */
+    background: conic-gradient(
+        hsl(0 92% 58%),
+        hsl(60 92% 56%),
+        hsl(120 92% 54%),
+        hsl(180 92% 54%),
+        hsl(240 92% 56%),
+        hsl(300 92% 58%),
+        hsl(360 92% 58%)
+    );
+    opacity: 40%;
+    animation: thread-create-rainbow-spin 18s linear infinite;
+}
+
+@keyframes thread-create-rainbow-spin {
+    from {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .thread-create-floating-rainbow-ring {
+        animation: none;
+    }
+}
+
+.thread-create-floating-btn {
+    position: relative;
+    z-index: 1;
     min-width: 10.75rem;
     min-height: 2.7rem;
     padding: 0.62rem 1rem;
@@ -865,7 +914,28 @@ nav img {
     align-items: center;
     justify-content: center;
     gap: 0.42rem;
-    box-shadow: 2px 2px 2px rgba(37, 34, 48, 0.29);
+    border: none;
+    border-radius: 0.5em;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    background: linear-gradient(to bottom, var(--theme-nav-top), var(--theme-nav-bot));
+    transition: filter 0.15s ease, opacity 0.15s ease;
+    box-shadow: none;
+}
+
+.thread-create-floating-btn:hover:not(:disabled) {
+    filter: brightness(1.2);
+}
+
+.thread-create-floating-btn:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.95);
+    outline-offset: 2px;
+}
+
+.thread-create-floating-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
 }
 
 .thread-create-floating-icon {

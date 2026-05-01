@@ -1,12 +1,12 @@
-<ThreadListToolbar v-model="filterNameInput" search-label="Search by name:">
+<ThreadListToolbar v-model="filterNameInput" search-label="Search by name:" :disabled="isCreating">
     <template #filters>
         <div class="thread-filter-field">
             <span class="thread-card-note thread-filter-label">Filter by tags:</span>
-            <input class="thread-create-tags" v-model="filterTagsInput" placeholder="tag1, tag2" />
+            <input class="thread-create-tags" v-model="filterTagsInput" placeholder="tag1, tag2" :disabled="isCreating" />
         </div>
         <div class="thread-filter-field thread-filter-size-field">
             <span class="thread-card-note thread-filter-label">Filter by size:</span>
-            <select class="thread-create-size thread-filter-size" v-model="filterSizeLimit" aria-label="Filter by chat size">
+            <select class="thread-create-size thread-filter-size" v-model="filterSizeLimit" :disabled="isCreating" aria-label="Filter by chat size">
                 <option value="">Any</option>
                 <option :value="2">tiny (2)</option>
                 <option :value="5">small (5)</option>
@@ -43,8 +43,8 @@
                             <ThreadCardLastPreview :preview="lastPreviewByChannel[obj.value.channel] ?? null" />
                         </div>
                         <div class="thread-card-actions thread-card-actions-inline">
-                            <button type="button" class="thread-card-btn" @click="leaveThread(obj)">Leave</button>
-                            <button type="button" class="thread-card-btn thread-card-btn-primary" @click="openChat(obj)">Open</button>
+                            <button type="button" class="thread-card-btn" @click="leaveThread(obj)" :disabled="isCreating">Leave</button>
+                            <button type="button" class="thread-card-btn thread-card-btn-primary" @click="openChat(obj)" :disabled="isCreating">Open</button>
                         </div>
                     </article>
                 </div>
@@ -52,3 +52,45 @@
         </transition>
     </div>
 </div>
+
+<div class="thread-create-floating-shell">
+    <div class="thread-create-floating-rainbow-ring" aria-hidden="true"></div>
+    <button
+        type="button"
+        class="thread-create-floating-btn"
+        @click="isCreateModalOpen = true"
+        :disabled="isCreating"
+    >
+        <span class="thread-create-floating-icon" aria-hidden="true"></span>
+        <span>Create new chat</span>
+    </button>
+</div>
+
+<modal-window :open="isCreateModalOpen" title="Create new chat" @close="isCreateModalOpen = false">
+    <section class="thread-create-modal-form">
+        <div class="thread-create-modal-field">
+            <label class="thread-create-modal-label" for="modal-chat-name-chats">Chat name:</label>
+            <input id="modal-chat-name-chats" class="thread-create-title" v-model="newTitle" placeholder="Title" :disabled="isCreating" />
+        </div>
+        <div class="thread-create-modal-field">
+            <label class="thread-create-modal-label" for="modal-chat-tags-chats">Tags (comma-separated):</label>
+            <input id="modal-chat-tags-chats" class="thread-create-tags" v-model="newTagsInput" placeholder="Tags (comma-separated)" :disabled="isCreating" />
+        </div>
+        <div class="thread-create-modal-field">
+            <label class="thread-create-modal-label" for="modal-chat-size-chats">Size:</label>
+            <select id="modal-chat-size-chats" class="thread-create-size" v-model.number="newSizeLimit" :disabled="isCreating" aria-label="Chat size">
+                <option :value="2">tiny (2)</option>
+                <option :value="5">small (5)</option>
+                <option :value="10">medium (10)</option>
+                <option :value="30">large (30)</option>
+            </select>
+        </div>
+    </section>
+    <div class="modal-footer">
+        <button
+            class="thread-card-btn thread-card-btn-primary modal-create-submit-btn"
+            @click="submitCreateFromModal()"
+            :disabled="isCreating || !newTitle.trim()"
+        >{{ isCreating ? "Creating..." : "Create" }}</button>
+    </div>
+</modal-window>
