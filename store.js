@@ -42,7 +42,7 @@ const threadLineSchema = {
     },
 };
 
-export const CLASS_CHANNEL = "designftw-26";
+export const CLASS_CHANNEL = "new-design-ftw-26";
 
 // Module-level singletons shared across all route components
 export const threads             = ref([]);
