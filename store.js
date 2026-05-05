@@ -138,6 +138,8 @@ export function useSharedStore() {
                 },
             },
         },
+        session,
+        true,
     );
 
     const { objects: threadDeleteStatusObjects, isFirstPoll: threadDeletesIsFirstPoll } = useGraffitiDiscover(
