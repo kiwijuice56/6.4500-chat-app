@@ -15,6 +15,8 @@ export default async () => ({
         ModalWindow: await (await import("../components/ModalWindow.js")).default(),
         ThreadCardLastPreview: await (await import("../components/ThreadCardLastPreview.js")).default(),
         ThreadListToolbar: await (await import("../components/ThreadListToolbar.js")).default(),
+        TagBubblesFilter: await (await import("../components/TagBubblesFilter.js")).default(),
+        ExploreTagWordCloud: await (await import("../components/ExploreTagWordCloud.js")).default(),
     },
     setup() {
         const graffiti = useGraffiti();
@@ -25,7 +27,8 @@ export default async () => ({
         const newTagsInput = ref("");
         const newSizeLimit = ref(5);
         const filterNameInput = ref("");
-        const filterTagsInput = ref("");
+        const filterTags = ref([]);
+        const filterTagDraft = ref("");
         const filterSizeLimit = ref("");
         const isCreating   = ref(false);
         const isCreateModalOpen = ref(false);
@@ -34,10 +37,7 @@ export default async () => ({
             [...threads.value].toSorted((a, b) => (b.value.published ?? 0) - (a.value.published ?? 0)),
         );
         const filteredThreads = computed(() => {
-            const parsedTags = filterTagsInput.value
-                .split(",")
-                .map((t) => t.trim().toLowerCase())
-                .filter(Boolean);
+            const parsedTags = filterTags.value.map((t) => String(t).trim().toLowerCase()).filter(Boolean);
             const selectedSize = Number(filterSizeLimit.value);
 
             const nameQ = filterNameInput.value.trim().toLowerCase();
@@ -52,9 +52,17 @@ export default async () => ({
         });
         const hasFiltersApplied = computed(() =>
             filterNameInput.value.trim().length > 0 ||
-                filterTagsInput.value.trim().length > 0 ||
+                filterTags.value.length > 0 ||
                 String(filterSizeLimit.value).length > 0,
         );
+
+        function onCloudPickTag(display) {
+            filterTagDraft.value = "";
+            const k = String(display).trim().toLowerCase();
+            if (!k) return;
+            if (filterTags.value.some((x) => String(x).trim().toLowerCase() === k)) return;
+            filterTags.value = [...filterTags.value, String(display).trim()];
+        }
 
         async function createThread() {
             if (isCreating.value) return false;
@@ -145,8 +153,10 @@ export default async () => ({
             newTagsInput,
             newSizeLimit,
             filterNameInput,
-            filterTagsInput,
+            filterTags,
+            filterTagDraft,
             filterSizeLimit,
+            onCloudPickTag,
             isCreating,
             isCreateModalOpen,
             filteredThreads,

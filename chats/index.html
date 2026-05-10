@@ -1,18 +1,19 @@
 <ThreadListToolbar v-model="filterNameInput" search-label="Search by name:" :disabled="isCreating">
     <template #filters>
-        <div class="thread-filter-field">
-            <span class="thread-card-note thread-filter-label">Filter by tags:</span>
-            <input class="thread-create-tags" v-model="filterTagsInput" placeholder="tag1, tag2" :disabled="isCreating" />
-        </div>
-        <div class="thread-filter-field thread-filter-size-field">
-            <span class="thread-card-note thread-filter-label">Filter by size:</span>
-            <select class="thread-create-size thread-filter-size" v-model="filterSizeLimit" :disabled="isCreating" aria-label="Filter by chat size">
-                <option value="">Any</option>
-                <option :value="2">tiny (2)</option>
-                <option :value="5">small (5)</option>
-                <option :value="10">medium (10)</option>
-                <option :value="30">large (30)</option>
-            </select>
+        <div class="thread-toolbar-filter-row">
+            <div class="thread-filter-field">
+                <TagBubblesFilter v-model="filterTags" v-model:draft="filterTagDraft" :disabled="isCreating" />
+            </div>
+            <div class="thread-filter-field thread-filter-size-field">
+                <span class="thread-card-note thread-filter-label">Filter by size:</span>
+                <select class="thread-create-size thread-filter-size" v-model="filterSizeLimit" :disabled="isCreating" aria-label="Filter by chat size">
+                    <option value="">Any</option>
+                    <option :value="2">tiny (2)</option>
+                    <option :value="5">small (5)</option>
+                    <option :value="10">medium (10)</option>
+                    <option :value="30">large (30)</option>
+                </select>
+            </div>
         </div>
     </template>
 </ThreadListToolbar>

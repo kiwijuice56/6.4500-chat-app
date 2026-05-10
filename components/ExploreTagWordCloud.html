@@ -1,0 +1,49 @@
+<section class="explore-tag-cloud" :class="{ 'explore-tag-cloud--disabled': disabled }" aria-label="Tags across all chats">
+    <p class="explore-tag-cloud-caption thread-card-note">Tags across all chats</p>
+    <div class="explore-tag-cloud-stage">
+        <Transition name="tag-cloud-disclaimer" mode="out-in">
+            <div v-if="showDisclaimer" key="empty" class="explore-tag-cloud-disclaimer" role="status">No tags found</div>
+            <div
+                v-else
+                key="cloud"
+                ref="viewportEl"
+                class="explore-tag-cloud-viewport"
+                @pointerdown="onViewportPointerDown"
+                @pointermove="onViewportPointerMove"
+                @pointerup="onViewportPointerUp"
+                @pointercancel="onViewportPointerCancel"
+                @wheel.prevent="onViewportWheel"
+            >
+                <div ref="worldEl" class="explore-tag-cloud-world" :style="worldStyle">
+                    <div class="explore-tag-cloud-grid-layer" aria-hidden="true"></div>
+                    <div
+                        v-if="showCollisionDebug && layoutItems.length"
+                        class="explore-tag-cloud-collision-debug"
+                        aria-hidden="true"
+                    >
+                        <div
+                            v-for="item in layoutItems"
+                            :key="'collision-' + item.key"
+                            class="explore-tag-cloud-collision-debug-box"
+                            :style="item.collisionBoxStyle"
+                        ></div>
+                    </div>
+                    <div class="explore-tag-cloud-words">
+                        <button
+                            v-for="item in layoutItems"
+                            :key="item.key"
+                            type="button"
+                            class="explore-tag-cloud-word"
+                            :class="{ 'explore-tag-cloud-word--primary': item.isPrimary }"
+                            :disabled="disabled"
+                            :style="item.style"
+                            @pointerenter="onWordPointerEnter"
+                            @pointerleave="onWordPointerLeave"
+                            @click.stop="$emit('pick', item.display)"
+                        ><span class="explore-tag-cloud-word-inner">{{ item.label }}</span></button>
+                    </div>
+                </div>
+            </div>
+        </Transition>
+    </div>
+</section>

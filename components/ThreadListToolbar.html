@@ -12,7 +12,7 @@
             @input="$emit('update:modelValue', $event.target.value)"
         />
     </div>
-    <div v-if="$slots.filters" class="thread-toolbar-filter-row">
+    <div v-if="$slots.filters" class="thread-toolbar-filters-slot">
         <slot name="filters"></slot>
     </div>
 </section>

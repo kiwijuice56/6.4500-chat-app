@@ -1,0 +1,31 @@
+<div class="tag-bubbles-filter">
+    <span class="thread-card-note thread-filter-label">Filter by tags:</span>
+    <div
+        class="tag-bubbles-filter-box"
+        :class="{ 'tag-bubbles-filter-box--disabled': disabled }"
+        @click="focusInput"
+    >
+        <span v-for="(tag, i) in modelValue" :key="'bubble-' + i + '-' + tag" class="tag-bubble">
+            <span class="tag-bubble-text" :title="tag">{{ formatTagBubble(tag) }}</span>
+            <button
+                type="button"
+                class="tag-bubble-remove"
+                :disabled="disabled"
+                :aria-label="'Remove tag ' + tag"
+                @click.stop="removeAt(i)"
+            >×</button>
+        </span>
+        <input
+            ref="inputEl"
+            class="tag-bubbles-filter-input"
+            type="text"
+            autocomplete="off"
+            :value="draft"
+            :disabled="disabled"
+            placeholder="Add new tag..."
+            @input="onDraftInput"
+            @keydown.enter.prevent="commitDraft"
+            @keydown.backspace="onBackspace"
+        />
+    </div>
+</div>

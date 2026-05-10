@@ -730,10 +730,20 @@ nav img {
     box-shadow: 0 1px 3px rgba(37, 34, 48, 0.12);
 }
 
+.thread-toolbar-filters-slot {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    min-width: 0;
+    width: 100%;
+}
+
 .thread-toolbar-filter-row {
     display: flex;
-    align-items: flex-end;
+    align-items: flex-start;
     gap: 0.6rem;
+    width: 100%;
+    min-width: 0;
 }
 
 .thread-filter-field {
@@ -746,6 +756,337 @@ nav img {
 
 .thread-filter-size-field {
     flex: 0 0 8.25rem;
+}
+
+.thread-filter-tags-inline {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+/* Explore: tag row + full-width cloud stacked */
+.thread-toolbar-filters-explore {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    width: 100%;
+    min-width: 0;
+}
+
+.thread-toolbar-explore-cloud {
+    width: 100%;
+    min-width: 0;
+}
+
+/* Tag filter: bubbles + inline input */
+.tag-bubbles-filter {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+}
+
+.tag-bubbles-filter-box {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem;
+    min-height: 2.15rem;
+    padding: 0.2rem 0.4rem;
+    border: 1px solid #c5d0d8;
+    border-radius: 0.35em;
+    background: #fff;
+    box-sizing: border-box;
+    cursor: text;
+}
+
+.tag-bubbles-filter-box--disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.tag-bubble {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.12rem;
+    max-width: 100%;
+    padding: 0.12rem 0.22rem 0.12rem 0.4rem;
+    border-radius: 999px;
+    /* Same fill as message scroll panels (`.scroll-box` / `--surface-scroll-soft`) */
+    background: var(--surface-scroll-soft, #f3f7fa);
+    border: 1px solid #c5d0d8;
+    font-size: 0.82em;
+    font-weight: 600;
+    color: #4a6674;
+    box-sizing: border-box;
+}
+
+.tag-bubble-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 12rem;
+}
+
+.tag-bubble-remove {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.15rem;
+    height: 1.15rem;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.55);
+    color: #5e7787;
+    font-size: 0.95rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.tag-bubble-remove:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.95);
+    color: #4a6674;
+}
+
+.tag-bubble-remove:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.tag-bubbles-filter-input {
+    flex: 1 1 6rem;
+    min-width: 5rem;
+    height: 1.55rem;
+    margin: 0;
+    padding: 0 0.15rem;
+    border: none;
+    outline: none;
+    background: transparent;
+    font: inherit;
+    color: inherit;
+    box-sizing: border-box;
+}
+
+.tag-bubbles-filter-input:disabled {
+    cursor: not-allowed;
+}
+
+/* Explore: tag frequency word cloud */
+.explore-tag-cloud {
+    margin: 0;
+    padding: 0.4rem 0.45rem 0.5rem;
+    border: 1px solid #dce4ea;
+    border-radius: 0.35em;
+    background: #fafcfd;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    contain: layout;
+    /* Definite height so % heights on the panning world resolve (avoids a 1-line-tall strip). */
+    --explore-cloud-viewport-h: clamp(8.5rem, 24vh, 17rem);
+    /* Grid cell scales with viewport; 1px line inside each cell */
+    --cloud-grid-cell: clamp(18px, 2.6vmin, 40px);
+    --cloud-grid-line: calc(var(--cloud-grid-cell) - 1px);
+}
+
+.explore-tag-cloud-caption {
+    margin: 0 0 0.35rem;
+    text-align: left;
+}
+
+.explore-tag-cloud--disabled {
+    opacity: 0.55;
+    pointer-events: none;
+}
+
+.explore-tag-cloud-stage {
+    position: relative;
+    min-height: var(--explore-cloud-viewport-h, clamp(8.5rem, 24vh, 17rem));
+}
+
+/* Clipped window; pan to see oversized world + grid */
+.explore-tag-cloud-viewport {
+    position: relative;
+    overflow: hidden;
+    height: var(--explore-cloud-viewport-h, clamp(8.5rem, 24vh, 17rem));
+    min-height: var(--explore-cloud-viewport-h, clamp(8.5rem, 24vh, 17rem));
+    touch-action: none;
+    cursor: grab;
+    overscroll-behavior: contain;
+}
+
+.explore-tag-cloud-viewport--grabbing {
+    cursor: grabbing;
+    user-select: none;
+}
+
+.explore-tag-cloud-world {
+    position: relative;
+    box-sizing: border-box;
+    width: 340%;
+    /* % height is relative to viewport’s definite height — yields a tall canvas for % top positions */
+    height: 320%;
+    min-height: 320%;
+    will-change: transform;
+}
+
+.explore-tag-cloud-grid-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    box-sizing: border-box;
+    /* Horizontal lines: gradient runs downward; vertical lines: gradient runs rightward */
+    background-image:
+        repeating-linear-gradient(
+            to bottom,
+            transparent 0,
+            transparent var(--cloud-grid-line, 31px),
+            rgba(74, 102, 116, 0.07) var(--cloud-grid-line, 31px),
+            rgba(74, 102, 116, 0.07) var(--cloud-grid-cell, 32px)
+        ),
+        repeating-linear-gradient(
+            to right,
+            transparent 0,
+            transparent var(--cloud-grid-line, 31px),
+            rgba(74, 102, 116, 0.07) var(--cloud-grid-line, 31px),
+            rgba(74, 102, 116, 0.07) var(--cloud-grid-cell, 32px)
+        );
+}
+
+/* Same %-space as words; dashed outline = axis-aligned box used in rectsOverlap (+ gap in logic only). */
+.explore-tag-cloud-collision-debug {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    margin: 0;
+    padding: 0;
+    pointer-events: none;
+}
+
+.explore-tag-cloud-collision-debug-box {
+    position: absolute;
+    box-sizing: border-box;
+    border: 1px dashed rgba(214, 74, 120, 0.75);
+    background: rgba(214, 74, 120, 0.06);
+    pointer-events: none;
+}
+
+.explore-tag-cloud-words {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    pointer-events: none;
+}
+
+.explore-tag-cloud-word {
+    position: absolute;
+    margin: 0;
+    padding: 0.14em 0.168em;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    pointer-events: auto;
+    font-family: inherit;
+    font-weight: 600;
+    color: #4a6674;
+    white-space: nowrap;
+    line-height: 1.15;
+    transform-origin: top left;
+    /* Opacity from custom prop so Vue TransitionGroup can animate the `opacity` property */
+    opacity: var(--tag-cloud-op, 1);
+    transition:
+        left 0.1s ease,
+        top 0.1s ease,
+        font-size 0.1s ease,
+        opacity 0.1s ease;
+}
+
+/* Rotate label around its center; button keeps top-left origin for %-positioned layout. */
+.explore-tag-cloud-word-inner {
+    display: inline-block;
+    transform-origin: center center;
+}
+
+/* Loop hits 0deg at start/end of each 0.6s cycle so hover-on does not jump to ±4deg. */
+.explore-tag-cloud-word:hover:not(:disabled) .explore-tag-cloud-word-inner {
+    animation: explore-tag-cloud-wiggle 0.6s ease-in-out infinite;
+}
+
+@keyframes explore-tag-cloud-wiggle {
+    0%,
+    100% {
+        transform: rotate(0deg);
+    }
+    25% {
+        transform: rotate(-4deg);
+    }
+    50% {
+        transform: rotate(4deg);
+    }
+    75% {
+        transform: rotate(-4deg);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .explore-tag-cloud-word:hover:not(:disabled) .explore-tag-cloud-word-inner {
+        animation: none;
+    }
+}
+
+.explore-tag-cloud-word:hover:not(:disabled) {
+    color: var(--theme-accent, #d989a9);
+}
+
+.explore-tag-cloud-word:disabled {
+    cursor: not-allowed;
+}
+
+.explore-tag-cloud-disclaimer {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 0.92em;
+    color: #7f8f99;
+}
+
+.tag-cloud-disclaimer-enter-active,
+.tag-cloud-disclaimer-leave-active {
+    transition: opacity 0.1s ease;
+}
+
+.tag-cloud-disclaimer-enter-from,
+.tag-cloud-disclaimer-leave-to {
+    opacity: 0;
+}
+
+.tag-cloud-word-enter-active,
+.tag-cloud-word-leave-active {
+    transition: opacity 0.1s ease;
+}
+
+.tag-cloud-word-enter-from,
+.tag-cloud-word-leave-to {
+    opacity: 0;
+}
+
+.tag-cloud-word-leave-active {
+    position: absolute;
+    z-index: 4;
+}
+
+.tag-cloud-word-move {
+    transition: none;
 }
 
 .thread-filter-label {

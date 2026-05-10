@@ -15,6 +15,7 @@ export default async () => ({
         ModalWindow: await (await import("../components/ModalWindow.js")).default(),
         ThreadCardLastPreview: await (await import("../components/ThreadCardLastPreview.js")).default(),
         ThreadListToolbar: await (await import("../components/ThreadListToolbar.js")).default(),
+        TagBubblesFilter: await (await import("../components/TagBubblesFilter.js")).default(),
     },
     setup() {
         const graffiti = useGraffiti();
@@ -25,7 +26,8 @@ export default async () => ({
         const newTagsInput = ref("");
         const newSizeLimit = ref(5);
         const filterNameInput = ref("");
-        const filterTagsInput = ref("");
+        const filterTags = ref([]);
+        const filterTagDraft = ref("");
         const filterSizeLimit = ref("");
         const isCreating   = ref(false);
         const isCreateModalOpen = ref(false);
@@ -41,10 +43,7 @@ export default async () => ({
         );
 
         const filteredMyThreads = computed(() => {
-            const parsedTags = filterTagsInput.value
-                .split(",")
-                .map((t) => t.trim().toLowerCase())
-                .filter(Boolean);
+            const parsedTags = filterTags.value.map((t) => String(t).trim().toLowerCase()).filter(Boolean);
             const selectedSize = Number(filterSizeLimit.value);
             const nameQ = filterNameInput.value.trim().toLowerCase();
 
@@ -60,7 +59,7 @@ export default async () => ({
 
         const hasFiltersApplied = computed(() =>
             filterNameInput.value.trim().length > 0 ||
-                filterTagsInput.value.trim().length > 0 ||
+                filterTags.value.length > 0 ||
                 String(filterSizeLimit.value).length > 0,
         );
 
@@ -146,7 +145,8 @@ export default async () => ({
             myThreads,
             filteredMyThreads,
             filterNameInput,
-            filterTagsInput,
+            filterTags,
+            filterTagDraft,
             filterSizeLimit,
             hasFiltersApplied,
             threadsLoading,
