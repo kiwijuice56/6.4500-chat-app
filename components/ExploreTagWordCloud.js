@@ -315,12 +315,20 @@ export default async () => ({
             return buildFilteredTagList().filter((t) => !selected.has(t.key));
         }
 
+        /** Tag pool fingerprint plus filtered thread set (so empty layouts refresh when name/size filters change). */
+        function currentCloudLayoutFingerprint() {
+            const pool = buildCloudPoolTagList();
+            const th = props.threads ?? [];
+            const threadSig = `${th.length}:${[...th].map((o) => o.url).sort().join(",")}`;
+            return `${tagsFingerprint(pool)}\0${threadSig}`;
+        }
+
         /**
          * Stable string: only changes when visible tag keys/counts or draft filter meaningfully change.
          * Watching `filteredStats`-style arrays reset pan whenever the parent passes a new `threads`
          * array (same tags) because those computables always allocate fresh arrays.
          */
-        const cloudLayoutFingerprint = computed(() => tagsFingerprint(buildCloudPoolTagList()));
+        const cloudLayoutFingerprint = computed(() => currentCloudLayoutFingerprint());
 
         /** Collapsed strip: same pool as the cloud, highest frequency first. */
         const stripItems = computed(() => {
@@ -335,9 +343,12 @@ export default async () => ({
             });
         });
 
-        const showDisclaimer = computed(
-            () => props.draft.trim().length > 0 && buildFilteredTagList().length === 0,
-        );
+        /** `null` when the cloud/strip has tags; otherwise banner copy for expanded + collapsed empty states. */
+        const emptyPoolBanner = computed(() => {
+            if (buildCloudPoolTagList().length > 0) return null;
+            if (props.draft.trim().length > 0 && buildFilteredTagList().length === 0) return "No tags found";
+            return "No tags";
+        });
 
         const layoutItems = ref([]);
 
@@ -575,7 +586,7 @@ export default async () => ({
                  */
                 function applyLayoutWhenWorldSized() {
                     const commit = (ww, wh) => {
-                        if (tagsFingerprint(buildCloudPoolTagList()) !== fp) return;
+                        if (currentCloudLayoutFingerprint() !== fp) return;
                         const wasEmpty = layoutItems.value.length === 0;
                         if (!wasEmpty) {
                             clearTimeout(panRecenterTimer);
@@ -589,7 +600,7 @@ export default async () => ({
                         }
                     };
                     nextTick(() => {
-                        if (tagsFingerprint(buildCloudPoolTagList()) !== fp) return;
+                        if (currentCloudLayoutFingerprint() !== fp) return;
                         const ww0 = worldEl.value?.offsetWidth ?? 0;
                         const wh0 = worldEl.value?.offsetHeight ?? 0;
                         if (ww0 > 0 && wh0 > 0) {
@@ -599,7 +610,7 @@ export default async () => ({
                         commit(0, 0);
                         let frames = 0;
                         const step = () => {
-                            if (tagsFingerprint(buildCloudPoolTagList()) !== fp) return;
+                            if (currentCloudLayoutFingerprint() !== fp) return;
                             const ww = worldEl.value?.offsetWidth ?? 0;
                             const wh = worldEl.value?.offsetHeight ?? 0;
                             if (ww > 0 && wh > 0) {
@@ -619,8 +630,8 @@ export default async () => ({
             { immediate: true },
         );
 
-        watch(showDisclaimer, (v) => {
-            if (v) {
+        watch(emptyPoolBanner, (msg) => {
+            if (msg != null) {
                 clearTimeout(panRecenterTimer);
                 panRecenterTimer = null;
                 panX.value = 0;
@@ -631,7 +642,7 @@ export default async () => ({
         });
 
         return {
-            showDisclaimer,
+            emptyPoolBanner,
             layoutItems,
             stripItems,
             cloudCollapsed,

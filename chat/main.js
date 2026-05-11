@@ -32,6 +32,7 @@ export default async () => {
         components: {
             MessageBubble,
             ModalWindow: await (await import("../components/ModalWindow.js")).default(),
+            ThreadCardTagsDisplay: await (await import("../components/ThreadCardTagsDisplay.js")).default(),
         },
         setup() {
             const graffiti = useGraffiti();
@@ -57,7 +58,7 @@ export default async () => {
             const chatMetaTitle = computed(() => {
                 const t = activeThread.value?.value;
                 if (!t) return "";
-                const tags = t.tags?.length ? t.tags.join(", ") : "No tags";
+                const tags = t.tags?.length ? t.tags.join(", ") : "No tags found";
                 return `${memberActors.value.length} / ${t.sizeLimit} joined · ${tags}`;
             });
 

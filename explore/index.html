@@ -18,7 +18,7 @@
             </div>
             <ExploreTagWordCloud
                 class="thread-toolbar-explore-cloud"
-                :threads="threadsNewestFirst"
+                :threads="filteredThreads"
                 :draft="filterTagDraft"
                 :selected-tags="filterTags"
                 :disabled="isCreating"
@@ -49,7 +49,8 @@
                 <div class="thread-card-main">
                     <h3 class="thread-card-title">{{ obj.value.title }}</h3>
                     <p class="thread-card-line thread-card-meta-row" :title="threadMetaTitle(obj)">
-                        {{ membersOfThread(obj).length }} / {{ obj.value.sizeLimit }} joined · {{ obj.value.tags.length ? obj.value.tags.join(", ") : "No tags" }}
+                        <span class="thread-card-meta-prefix">{{ membersOfThread(obj).length }} / {{ obj.value.sizeLimit }} joined · </span>
+                        <ThreadCardTagsDisplay :tags="obj.value.tags ?? []" />
                     </p>
                     <ThreadCardLastPreview :preview="lastPreviewByChannel[obj.value.channel] ?? null" />
                 </div>

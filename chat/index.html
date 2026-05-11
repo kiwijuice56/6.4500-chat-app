@@ -26,7 +26,8 @@
             </div>
         </div>
         <p class="thread-card-line thread-card-meta-row chat-header-meta" :title="chatMetaTitle">
-            {{ memberActors.length }} / {{ activeThread.value.sizeLimit }} joined · {{ activeThread.value.tags.length ? activeThread.value.tags.join(", ") : "No tags" }}
+            <span class="thread-card-meta-prefix">{{ memberActors.length }} / {{ activeThread.value.sizeLimit }} joined · </span>
+            <ThreadCardTagsDisplay :tags="activeThread.value.tags ?? []" />
         </p>
     </header>
 

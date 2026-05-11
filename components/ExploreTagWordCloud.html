@@ -1,10 +1,10 @@
 <section
     class="explore-tag-cloud"
     :class="{ 'explore-tag-cloud--disabled': disabled, 'explore-tag-cloud--collapsed': cloudCollapsed }"
-    aria-label="Tags across all chats"
+    aria-label="Available tags"
 >
     <div class="explore-tag-cloud-header">
-        <p class="explore-tag-cloud-caption thread-card-note">Tags across all chats</p>
+        <p class="explore-tag-cloud-caption thread-card-note">Available tags</p>
         <button
             type="button"
             class="explore-tag-cloud-toggle"
@@ -25,7 +25,7 @@
     >
         <div class="explore-tag-cloud-expanded-layer" :aria-hidden="cloudCollapsed ? 'true' : 'false'">
             <Transition name="tag-cloud-disclaimer" mode="out-in">
-                <div v-if="showDisclaimer" key="empty" class="explore-tag-cloud-disclaimer" role="status">No tags found</div>
+                <div v-if="emptyPoolBanner" key="empty" class="explore-tag-cloud-disclaimer" role="status">{{ emptyPoolBanner }}</div>
                 <div
                     v-else
                     key="cloud"
@@ -75,10 +75,10 @@
         >
             <div class="explore-tag-cloud-strip" role="list">
                 <p
-                    v-if="showDisclaimer"
+                    v-if="emptyPoolBanner"
                     class="explore-tag-cloud-strip-disclaimer"
                     role="status"
-                >No tags found</p>
+                >{{ emptyPoolBanner }}</p>
                 <div v-else class="explore-tag-cloud-strip-scroll">
                     <button
                         v-for="item in stripItems"

@@ -611,10 +611,59 @@ nav img {
 }
 
 .thread-card-meta-row {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 0.28rem;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.thread-card-meta-prefix {
+    flex: 0 0 auto;
     white-space: nowrap;
+}
+
+.thread-card-tags {
+    flex: 1 1 auto;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 0.28rem;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.thread-card-tags-empty {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    opacity: 0.62;
+}
+
+/* Match filter tag bubbles; single row — long tags ellipsize; excess tags clip (no wrap) */
+.thread-card-tag-chip {
+    flex: 0 1 auto;
+    display: inline-flex;
+    align-items: center;
+    max-width: 9rem;
+    min-width: 0;
+    height: 1.35rem;
+    padding: 0 0.32rem 0 0.36rem;
+    border-radius: 999px;
+    box-sizing: border-box;
+    background: var(--surface-scroll-soft, #f3f7fa);
+    border: 1px solid #c5d0d8;
+    font-size: 0.82em;
+    font-weight: 600;
+    color: #4a6674;
+}
+
+.thread-card-tag-chip-text {
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
-    min-width: 0;
+    white-space: nowrap;
+    line-height: 1.2;
 }
 
 .thread-card-last-row {

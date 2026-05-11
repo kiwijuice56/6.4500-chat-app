@@ -16,6 +16,7 @@ export default async () => ({
         ThreadCardLastPreview: await (await import("../components/ThreadCardLastPreview.js")).default(),
         ThreadListToolbar: await (await import("../components/ThreadListToolbar.js")).default(),
         TagBubblesFilter: await (await import("../components/TagBubblesFilter.js")).default(),
+        ThreadCardTagsDisplay: await (await import("../components/ThreadCardTagsDisplay.js")).default(),
     },
     setup() {
         const graffiti = useGraffiti();

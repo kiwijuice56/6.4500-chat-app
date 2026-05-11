@@ -1,0 +1,10 @@
+<span class="thread-card-tags">
+    <template v-if="!tags.length">
+        <span class="thread-card-tags-empty">No tags</span>
+    </template>
+    <template v-else>
+        <span v-for="(tag, i) in tags" :key="'t-' + i + '-' + tag" class="thread-card-tag-chip">
+            <span class="thread-card-tag-chip-text">{{ tag }}</span>
+        </span>
+    </template>
+</span>
