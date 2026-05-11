@@ -293,6 +293,8 @@ export default async () => ({
     props: {
         threads: { type: Array, default: () => [] },
         draft: { type: String, default: "" },
+        /** Tags already in the filter; excluded from cloud + strip (unknown strings are ignored). */
+        selectedTags: { type: Array, default: () => [] },
         disabled: { type: Boolean, default: false },
     },
     emits: ["pick"],
@@ -305,18 +307,46 @@ export default async () => ({
             return stats.filter((t) => t.key.includes(q) || t.display.toLowerCase().includes(q));
         }
 
+        /** Draft-filtered stats minus tags already chosen in the filter bar. */
+        function buildCloudPoolTagList() {
+            const selected = new Set(
+                (props.selectedTags ?? []).map((s) => String(s).trim().toLowerCase()).filter(Boolean),
+            );
+            return buildFilteredTagList().filter((t) => !selected.has(t.key));
+        }
+
         /**
          * Stable string: only changes when visible tag keys/counts or draft filter meaningfully change.
          * Watching `filteredStats`-style arrays reset pan whenever the parent passes a new `threads`
          * array (same tags) because those computables always allocate fresh arrays.
          */
-        const cloudLayoutFingerprint = computed(() => tagsFingerprint(buildFilteredTagList()));
+        const cloudLayoutFingerprint = computed(() => tagsFingerprint(buildCloudPoolTagList()));
+
+        /** Collapsed strip: same pool as the cloud, highest frequency first. */
+        const stripItems = computed(() => {
+            const pool = [...buildCloudPoolTagList()];
+            pool.sort((a, b) => {
+                if (b.count !== a.count) return b.count - a.count;
+                return a.key.localeCompare(b.key);
+            });
+            return pool.map((t) => {
+                const short = truncateTagLabel(t.display, 9);
+                return { key: t.key, display: t.display, label: `${short} (${t.count})` };
+            });
+        });
 
         const showDisclaimer = computed(
             () => props.draft.trim().length > 0 && buildFilteredTagList().length === 0,
         );
 
         const layoutItems = ref([]);
+
+        const cloudCollapsed = ref(false);
+
+        function toggleCloudCollapsed() {
+            if (props.disabled) return;
+            cloudCollapsed.value = !cloudCollapsed.value;
+        }
 
         const viewportEl = ref(null);
         const worldEl = ref(null);
@@ -527,7 +557,7 @@ export default async () => ({
         watch(
             cloudLayoutFingerprint,
             (fp) => {
-                const list = buildFilteredTagList();
+                const list = buildCloudPoolTagList();
                 if (!list.length) {
                     clearTimeout(panRecenterTimer);
                     panRecenterTimer = null;
@@ -545,7 +575,7 @@ export default async () => ({
                  */
                 function applyLayoutWhenWorldSized() {
                     const commit = (ww, wh) => {
-                        if (tagsFingerprint(buildFilteredTagList()) !== fp) return;
+                        if (tagsFingerprint(buildCloudPoolTagList()) !== fp) return;
                         const wasEmpty = layoutItems.value.length === 0;
                         if (!wasEmpty) {
                             clearTimeout(panRecenterTimer);
@@ -559,7 +589,7 @@ export default async () => ({
                         }
                     };
                     nextTick(() => {
-                        if (tagsFingerprint(buildFilteredTagList()) !== fp) return;
+                        if (tagsFingerprint(buildCloudPoolTagList()) !== fp) return;
                         const ww0 = worldEl.value?.offsetWidth ?? 0;
                         const wh0 = worldEl.value?.offsetHeight ?? 0;
                         if (ww0 > 0 && wh0 > 0) {
@@ -569,7 +599,7 @@ export default async () => ({
                         commit(0, 0);
                         let frames = 0;
                         const step = () => {
-                            if (tagsFingerprint(buildFilteredTagList()) !== fp) return;
+                            if (tagsFingerprint(buildCloudPoolTagList()) !== fp) return;
                             const ww = worldEl.value?.offsetWidth ?? 0;
                             const wh = worldEl.value?.offsetHeight ?? 0;
                             if (ww > 0 && wh > 0) {
@@ -603,6 +633,9 @@ export default async () => ({
         return {
             showDisclaimer,
             layoutItems,
+            stripItems,
+            cloudCollapsed,
+            toggleCloudCollapsed,
             showCollisionDebug: SHOW_TAG_CLOUD_COLLISION_DEBUG,
             viewportEl,
             worldEl,

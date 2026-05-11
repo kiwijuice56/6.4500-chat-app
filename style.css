@@ -563,7 +563,8 @@ nav img {
     flex-direction: column;
     gap: 0.75rem;
     margin-top: 0.5rem;
-    padding-bottom: 1.25rem;
+    /* Base scroll padding + ~½ a typical thread card (vertical padding + title + meta + preview row) */
+    padding-bottom: calc(1.25rem + (2rem + 1.12em * 1.3 + 0.25rem + 0.9em * 1.35 + 0.15rem + 1.2rem) / 2);
     width: 100%;
     box-sizing: border-box;
 }
@@ -767,7 +768,7 @@ nav img {
 .thread-toolbar-filters-explore {
     display: flex;
     flex-direction: column;
-    gap: 0.55rem;
+    gap: 0.32rem;
     width: 100%;
     min-width: 0;
 }
@@ -786,12 +787,14 @@ nav img {
 }
 
 .tag-bubbles-filter-box {
+    --tag-bubble-line-height: 1.55rem;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
+    align-content: flex-start;
     gap: 0.35rem;
-    min-height: 2.15rem;
-    padding: 0.2rem 0.4rem;
+    min-height: calc(var(--tag-bubble-line-height) + 0.6rem);
+    padding: 0.3rem 0.4rem;
     border: 1px solid #c5d0d8;
     border-radius: 0.35em;
     background: #fff;
@@ -809,7 +812,10 @@ nav img {
     align-items: center;
     gap: 0.12rem;
     max-width: 100%;
-    padding: 0.12rem 0.22rem 0.12rem 0.4rem;
+    height: var(--tag-bubble-line-height, 1.55rem);
+    min-height: var(--tag-bubble-line-height, 1.55rem);
+    max-height: var(--tag-bubble-line-height, 1.55rem);
+    padding: 0 0.22rem 0 0.38rem;
     border-radius: 999px;
     /* Same fill as message scroll panels (`.scroll-box` / `--surface-scroll-soft`) */
     background: var(--surface-scroll-soft, #f3f7fa);
@@ -825,6 +831,7 @@ nav img {
     text-overflow: ellipsis;
     white-space: nowrap;
     max-width: 12rem;
+    line-height: 1.2;
 }
 
 .tag-bubble-remove {
@@ -858,7 +865,9 @@ nav img {
 .tag-bubbles-filter-input {
     flex: 1 1 6rem;
     min-width: 5rem;
-    height: 1.55rem;
+    height: var(--tag-bubble-line-height, 1.55rem);
+    min-height: var(--tag-bubble-line-height, 1.55rem);
+    max-height: var(--tag-bubble-line-height, 1.55rem);
     margin: 0;
     padding: 0 0.15rem;
     border: none;
@@ -866,6 +875,7 @@ nav img {
     background: transparent;
     font: inherit;
     color: inherit;
+    line-height: var(--tag-bubble-line-height, 1.55rem);
     box-sizing: border-box;
 }
 
@@ -876,7 +886,7 @@ nav img {
 /* Explore: tag frequency word cloud */
 .explore-tag-cloud {
     margin: 0;
-    padding: 0.4rem 0.45rem 0.5rem;
+    padding: 0.2rem 0.45rem 0.5rem;
     border: 1px solid #dce4ea;
     border-radius: 0.35em;
     background: #fafcfd;
@@ -892,9 +902,64 @@ nav img {
     --cloud-grid-line: calc(var(--cloud-grid-cell) - 1px);
 }
 
+.explore-tag-cloud-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.45rem;
+    margin-bottom: 0.2rem;
+}
+
 .explore-tag-cloud-caption {
-    margin: 0 0 0.35rem;
+    margin: 0;
     text-align: left;
+    flex: 1;
+    min-width: 0;
+}
+
+/* Icon-only control; hit target smaller than filter select row, chevron unchanged (0.52×0.26) */
+.explore-tag-cloud-toggle {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.45rem;
+    height: 1.45rem;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0.35em;
+    background: transparent;
+    color: #5e7787;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.explore-tag-cloud-toggle:hover:not(:disabled) {
+    background: #eef3f6;
+    color: #4a6674;
+}
+
+.explore-tag-cloud-toggle:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.explore-tag-cloud-toggle:focus-visible {
+    outline: 2px solid var(--theme-accent, #d989a9);
+    outline-offset: 2px;
+}
+
+.explore-tag-cloud-toggle-svg {
+    display: block;
+    width: 0.52rem;
+    height: 0.26rem;
+    flex-shrink: 0;
+}
+
+/* Expanded cloud → chevron up (collapse); collapsed strip → chevron down (expand) */
+.explore-tag-cloud-toggle:not(.explore-tag-cloud-toggle--collapsed) .explore-tag-cloud-toggle-svg {
+    transform: rotate(180deg);
 }
 
 .explore-tag-cloud--disabled {
@@ -902,9 +967,120 @@ nav img {
     pointer-events: none;
 }
 
-.explore-tag-cloud-stage {
+/* Stacked layers: expanded cloud vs one-line strip; clip + translate for 0.1s motion */
+.explore-tag-cloud-stage-grid {
     position: relative;
+    overflow: hidden;
     min-height: var(--explore-cloud-viewport-h, clamp(8.5rem, 24vh, 17rem));
+    transition: min-height 0.1s ease;
+}
+
+.explore-tag-cloud-stage-grid--collapsed {
+    min-height: calc(0.12rem + 0.06rem + 1.75rem + 16px);
+}
+
+.explore-tag-cloud-expanded-layer,
+.explore-tag-cloud-collapsed-layer {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    width: 100%;
+    box-sizing: border-box;
+    transition: transform 0.1s ease;
+}
+
+.explore-tag-cloud-expanded-layer {
+    z-index: 1;
+    min-height: var(--explore-cloud-viewport-h, clamp(8.5rem, 24vh, 17rem));
+    transform: translateY(0);
+}
+
+.explore-tag-cloud--collapsed .explore-tag-cloud-expanded-layer {
+    transform: translateY(-100%);
+    pointer-events: none;
+}
+
+/* Past full stage height — translateY(100%) only moved by strip height, so it stayed on top of the cloud */
+.explore-tag-cloud-collapsed-layer {
+    z-index: 2;
+    min-height: calc(0.12rem + 0.06rem + 1.75rem + 16px);
+    display: flex;
+    align-items: stretch;
+    padding: 0.12rem 0 0.06rem;
+    transform: translateY(calc(var(--explore-cloud-viewport-h, clamp(8.5rem, 24vh, 17rem)) + 1rem));
+    pointer-events: none;
+}
+
+.explore-tag-cloud--collapsed .explore-tag-cloud-collapsed-layer {
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.explore-tag-cloud-strip {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+    min-height: calc(1.75rem + 16px);
+    max-height: calc(1.75rem + 16px);
+    box-sizing: border-box;
+}
+
+/* Same wording/style as expanded disclaimer, inline in the collapsed strip */
+.explore-tag-cloud-strip-disclaimer {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    min-width: 0;
+    padding: 0 0.35rem;
+    font-size: 0.92em;
+    color: #7f8f99;
+    text-align: center;
+}
+
+/* Scroll only the chip row; chips stay top-aligned so the horizontal bar never shifts them vertically */
+.explore-tag-cloud-strip-scroll {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    gap: 0.35rem;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    padding-top: 0.06rem;
+    box-sizing: border-box;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+}
+
+.explore-tag-cloud-strip-chip {
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 0.12rem 0.38rem;
+    border-radius: 999px;
+    background: var(--surface-scroll-soft, #f3f7fa);
+    border: 1px solid #c5d0d8;
+    font: inherit;
+    font-size: 0.82em;
+    font-weight: 600;
+    color: #4a6674;
+    cursor: pointer;
+    white-space: nowrap;
+    line-height: 1.2;
+}
+
+.explore-tag-cloud-strip-chip:hover:not(:disabled) {
+    color: var(--theme-accent, #d989a9);
+}
+
+.explore-tag-cloud-strip-chip:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
 }
 
 /* Clipped window; pan to see oversized world + grid */
